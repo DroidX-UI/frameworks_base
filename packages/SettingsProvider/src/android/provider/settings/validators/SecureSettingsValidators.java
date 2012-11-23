@@ -446,5 +446,7 @@ public class SecureSettingsValidators {
         VALIDATORS.put(Secure.MANDATORY_BIOMETRICS_REQUIREMENTS_SATISFIED,
                 new InclusiveIntegerRangeValidator(0, 1));
         VALIDATORS.put(Secure.SYSTEM_BLACK_THEME, BOOLEAN_VALIDATOR);
+        VALIDATORS.put(Secure.BUTTON_BACKLIGHT_TIMEOUT, NON_NEGATIVE_INTEGER_VALIDATOR);
+        VALIDATORS.put(Secure.BUTTON_BRIGHTNESS, NON_NEGATIVE_INTEGER_VALIDATOR);
     }
 }
