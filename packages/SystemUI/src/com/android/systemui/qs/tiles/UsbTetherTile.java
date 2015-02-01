@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2015 The CyanogenMod Project
- * Copyright (C) 2017 The LineageOS Project
+ * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2017-2018 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,16 @@
 
 package com.android.systemui.qs.tiles;
 
-import android.content.ContentResolver;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
+import android.content.IntentFilter;
+import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.net.TetheringManager;
 import android.service.quicksettings.Tile;
 import android.view.View;
 
@@ -43,18 +48,27 @@ import com.android.systemui.res.R;
 
 import javax.inject.Inject;
 
-/** Quick settings tile: Sync **/
-public class SyncTile extends QSTileImpl<BooleanState> {
+/**
+ * USB Tether quick settings tile
+ */
+public class UsbTetherTile extends QSTileImpl<BooleanState> {
 
-    public static final String TILE_SPEC = "sync";
+    public static final String TILE_SPEC = "usb_tether";
 
-    private final Icon mIcon = ResourceIcon.get(R.drawable.ic_qs_sync);
+    private final Icon mIcon = ResourceIcon.get(R.drawable.ic_qs_usb_tether);
 
-    private Object mSyncObserverHandle = null;
+    private static final Intent TETHER_SETTINGS = new Intent().setComponent(new ComponentName(
+            "com.android.settings", "com.android.settings.TetherSettings"));
+
+    private final TetheringManager mTetheringManager;
+
     private boolean mListening;
 
+    private boolean mUsbConnected = false;
+    private boolean mUsbTetherEnabled = false;
+
     @Inject
-    public SyncTile(
+    public UsbTetherTile(
             QSHost host,
             QsEventLogger uiEventLogger,
             @Background Looper backgroundLooper,
@@ -67,74 +81,69 @@ public class SyncTile extends QSTileImpl<BooleanState> {
     ) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
+        mTetheringManager = mContext.getSystemService(TetheringManager.class);
     }
 
-    @Override
     public BooleanState newTileState() {
         return new BooleanState();
     }
 
     @Override
-    protected void handleClick(@Nullable View view) {
-        ContentResolver.setMasterSyncAutomatically(!mState.value);
-        refreshState();
-    }
-
-    @Override
-    public Intent getLongClickIntent() {
-        Intent intent = new Intent("android.settings.SYNC_SETTINGS");
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        return intent;
-    }
-
-    @Override
-    protected void handleUpdateState(BooleanState state, Object arg) {
-        state.value = ContentResolver.getMasterSyncAutomatically();
-        state.label = mContext.getString(R.string.quick_settings_sync_label);
-        state.icon = mIcon;
-        if (state.value) {
-            state.contentDescription =  mContext.getString(
-                    R.string.accessibility_quick_settings_sync_on);
-            state.state = Tile.STATE_ACTIVE;
+    public void handleSetListening(boolean listening) {
+        if (mListening == listening) {
+            return;
+        }
+        mListening = listening;
+        if (listening) {
+            final IntentFilter filter = new IntentFilter();
+            filter.addAction(UsbManager.ACTION_USB_STATE);
+            mContext.registerReceiver(mReceiver, filter);
         } else {
-            state.contentDescription =  mContext.getString(
-                    R.string.accessibility_quick_settings_sync_off);
-            state.state = Tile.STATE_INACTIVE;
+            mContext.unregisterReceiver(mReceiver);
         }
     }
 
     @Override
+    protected void handleClick(@Nullable View view) {
+        if (mUsbConnected) {
+            mTetheringManager.setUsbTethering(!mUsbTetherEnabled);
+        }
+    }
+
+    @Override
+    public Intent getLongClickIntent() {
+        return new Intent(TETHER_SETTINGS);
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mUsbConnected = intent.getBooleanExtra(UsbManager.USB_CONNECTED, false);
+            if (mUsbConnected && mTetheringManager.isTetheringSupported()) {
+                mUsbTetherEnabled = intent.getBooleanExtra(UsbManager.USB_FUNCTION_RNDIS, false);
+            } else {
+                mUsbTetherEnabled = false;
+            }
+            refreshState();
+        }
+    };
+
+    @Override
+    protected void handleUpdateState(BooleanState state, Object arg) {
+        state.value = mUsbTetherEnabled;
+        state.label = mContext.getString(R.string.quick_settings_usb_tether_label);
+        state.icon = mIcon;
+        state.state = !mUsbConnected ? Tile.STATE_UNAVAILABLE
+                : mUsbTetherEnabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE;
+    }
+
+    @Override
     public CharSequence getTileLabel() {
-        return mContext.getString(R.string.quick_settings_sync_label);
+        return mContext.getString(R.string.quick_settings_usb_tether_label);
     }
 
     @Override
     public int getMetricsCategory() {
         return MetricsEvent.CUSTOMIZE;
     }
-
-    @Override
-    public void handleSetListening(boolean listening) {
-        if (mListening == listening) return;
-        mListening = listening;
-
-        if (listening) {
-            mSyncObserverHandle = ContentResolver.addStatusChangeListener(
-                    ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, mSyncObserver);
-        } else {
-            ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
-            mSyncObserverHandle = null;
-        }
-    }
-
-    private SyncStatusObserver mSyncObserver = new SyncStatusObserver() {
-        public void onStatusChanged(int which) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    refreshState();
-                }
-            });
-        }
-    };
 }
