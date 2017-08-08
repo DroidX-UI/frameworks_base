@@ -81,4 +81,8 @@
         Auto (<xliff:g id="min_refresh_rate" example="60">%1$d</xliff:g> - <xliff:g id="max_refresh_rate" example="60">%2$d</xliff:g> Hz)
     </string>
     <string name="refresh_rate_forced_mode_placeholder"><xliff:g id="refresh_rate" example="60">%1$d</xliff:g> Hz</string>
+    
+    <!-- Custom QS tiles-->
+    <string name="tap_to_add_tiles">Tap on tiles to add or remove</string>
+    
 </resources>
