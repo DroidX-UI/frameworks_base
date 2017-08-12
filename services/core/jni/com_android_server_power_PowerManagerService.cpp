@@ -34,6 +34,7 @@
 #include <com_android_input_flags.h>
 #include <gui/SurfaceComposerClient.h>
 #include <hardware_legacy/power.h>
+#include <android/keycodes.h>
 #include <hidl/ServiceManagement.h>
 #include <limits.h>
 #include <nativehelper/JNIHelp.h>
@@ -99,7 +100,7 @@ static bool setPowerMode(Mode mode, bool enabled) {
 }
 
 void android_server_PowerManagerService_userActivity(nsecs_t eventTime, int32_t eventType,
-                                                     ui::LogicalDisplayId displayId) {
+                                                     ui::LogicalDisplayId displayId, int32_t keyCode) {
     if (gPowerManagerServiceObj) {
         // Throttle calls into user activity by event type.
         // We're a little conservative about argument checking here in case the caller
@@ -121,9 +122,14 @@ void android_server_PowerManagerService_userActivity(nsecs_t eventTime, int32_t 
 
         JNIEnv* env = AndroidRuntime::getJNIEnv();
 
+        int flags = 0;
+        if (keyCode == AKEYCODE_VOLUME_UP || keyCode == AKEYCODE_VOLUME_DOWN) {
+            flags |= USER_ACTIVITY_FLAG_NO_BUTTON_LIGHTS;
+        }
+
         env->CallVoidMethod(gPowerManagerServiceObj,
                             gPowerManagerServiceClassInfo.userActivityFromNative,
-                            nanoseconds_to_milliseconds(eventTime), eventType, displayId.val(), 0);
+                            nanoseconds_to_milliseconds(eventTime), eventType, displayId.val(), flags);
         checkAndClearExceptionFromCallback(env, "userActivityFromNative");
     }
 }
