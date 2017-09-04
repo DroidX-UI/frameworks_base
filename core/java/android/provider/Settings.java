@@ -17888,6 +17888,12 @@ public final class Settings {
                 "power_button_long_press";
 
         /**
+        * Whether to allow battery light
+        * @hide
+        */
+        public static final String BATTERY_LIGHT_ENABLED = "battery_light_enabled";
+
+        /**
          * Override internal R.integer.config_longPressOnPowerDurationMs. It determines the length
          * of power button press to be considered a long press in milliseconds.
          * Used by PhoneWindowManager.
