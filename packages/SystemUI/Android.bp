@@ -203,6 +203,7 @@ android_library {
         "bcsmartspace-google",
     ],
     manifest: "AndroidManifest.xml",
+    additional_manifests: ["DroidXManifest.xml"],
 
     javacflags: ["-Adagger.fastInit=enabled"],
     kotlincflags: ["-Xjvm-default=enable"],
