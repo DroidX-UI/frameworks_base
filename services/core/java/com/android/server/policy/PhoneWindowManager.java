@@ -4768,7 +4768,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 shouldTurnOnTv = true;
             } else if (down && (isWakeKey || keyCode == KeyEvent.KEYCODE_WAKEUP)
                     && isWakeKeyWhenScreenOff(keyCode)) {
-                wakeUpFromWakeKey(event);
+                wakeUpFromWakeKey(event, false);
                 shouldTurnOnTv = true;
             }
             if (shouldTurnOnTv) {
@@ -4850,7 +4850,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
 
             if (isWakeKey) {
-                wakeUpFromWakeKey(event);
+                wakeUpFromWakeKey(event, true);
             }
             return result;
         }
@@ -5280,7 +5280,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         if (isWakeKey) {
-            wakeUpFromWakeKey(event);
+            // Check proximity only on wake key
+            wakeUpFromWakeKey(event, event.getKeyCode() == KeyEvent.KEYCODE_WAKEUP);
         }
 
         // If the key event is targeted to a specific display, then the user is interacting with
