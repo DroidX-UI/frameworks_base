@@ -605,6 +605,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mHasNavigationBar;
     private boolean mHandleVolumeKeysInWM;
 
+    // Button wake control flags
+    boolean mWakeOnHomeKeyPress;
+    boolean mWakeOnMenuKeyPress;
+    boolean mWakeOnAppSwitchKeyPress;
+
     // Behavior of volume button music controls
     boolean mVolBtnMusicControls;
     boolean mVolBtnLongPress;
@@ -984,6 +989,21 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.KEY_APP_SWITCH_LONG_PRESS_ACTION), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOME_WAKE_SCREEN), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.BACK_WAKE_SCREEN), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MENU_WAKE_SCREEN), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ASSIST_WAKE_SCREEN), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.APP_SWITCH_WAKE_SCREEN), false, this,
                     UserHandle.USER_ALL);
 
             updateSettings();
@@ -2387,10 +2407,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         Resources res = mContext.getResources();
         mWakeOnDpadKeyPress =
                 res.getBoolean(com.android.internal.R.bool.config_wakeOnDpadKeyPress);
-        mWakeOnAssistKeyPress =
-                res.getBoolean(com.android.internal.R.bool.config_wakeOnAssistKeyPress);
-        mWakeOnBackKeyPress =
-                res.getBoolean(com.android.internal.R.bool.config_wakeOnBackKeyPress);
 
         // Init display burn-in protection
         boolean burnInProtectionEnabled = mContext.getResources().getBoolean(
@@ -3101,6 +3117,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }    
         ContentResolver resolver = mContext.getContentResolver();
         boolean updateRotation = false;
+        int mDeviceHardwareWakeKeys = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_deviceHardwareWakeKeys);
         synchronized (mLock) {
             mHasNavigationBar = NavbarUtils.isEnabled(mContext);
             mEndcallBehavior = Settings.System.getIntForUser(resolver,
@@ -3128,6 +3146,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     .getBoolean(com.android.internal.R.bool.config_volumeHushGestureEnabled)) {
                 mRingerToggleChord = VOLUME_HUSH_OFF;
             }
+
+            mWakeOnHomeKeyPress = (Settings.System.getIntForUser(resolver,
+                    Settings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1)
+                    && ((mDeviceHardwareWakeKeys & KEY_MASK_HOME) != 0);
+            mWakeOnBackKeyPress = (Settings.System.getIntForUser(resolver,
+                    Settings.System.BACK_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1)
+                    && ((mDeviceHardwareWakeKeys & KEY_MASK_BACK) != 0);
+            mWakeOnMenuKeyPress = (Settings.System.getIntForUser(resolver,
+                    Settings.System.MENU_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1)
+                    && ((mDeviceHardwareWakeKeys & KEY_MASK_MENU) != 0);
+            mWakeOnAssistKeyPress = (Settings.System.getIntForUser(resolver,
+                    Settings.System.ASSIST_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1)
+                    && ((mDeviceHardwareWakeKeys & KEY_MASK_ASSIST) != 0);
+            mWakeOnAppSwitchKeyPress = (Settings.System.getIntForUser(resolver,
+                    Settings.System.APP_SWITCH_WAKE_SCREEN, 0, UserHandle.USER_CURRENT) == 1)
+                    && ((mDeviceHardwareWakeKeys & KEY_MASK_APP_SWITCH) != 0);
 
             // Configure wake gesture.
             boolean wakeGestureEnabledSetting = Settings.Secure.getIntForUser(resolver,
@@ -4797,7 +4831,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 awakenDreams();
             }
             hideRecentApps(false, true);
-        } else {
+        } else if (mDefaultDisplayPolicy.isScreenOnFully()) {
             // Otherwise, just launch Home
             startDockOrHome(displayId, true /*fromHomeKey*/, awakenFromDreams);
         }
@@ -5028,8 +5062,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // If we're currently dozing with the screen on and the keyguard showing, pass the key
             // to the application but preserve its wake key status to make sure we still move
             // from dozing to fully interactive if we would normally go from off to fully
-            // interactive.
+            // interactive, unless the user has explicitly disabled this wake key.
             result = ACTION_PASS_TO_USER;
+            isWakeKey = isWakeKey && isWakeKeyEnabled(keyCode);
             // Since we're dispatching the input, reset the pending key
             mPendingWakeKey = PENDING_KEY_NULL;
         } else {
@@ -5221,6 +5256,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 break;
             }
+
+            case KeyEvent.KEYCODE_HOME:
+                if (down && !interactive) {
+                    isWakeKey = mWakeOnHomeKeyPress;
+                    if (!isWakeKey) {
+                        useHapticFeedback = false;
+                    }
+                }
+                break;
 
             case KeyEvent.KEYCODE_ENDCALL: {
                 result &= ~ACTION_PASS_TO_USER;
@@ -5628,6 +5672,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     /**
+     * Check if the given keyCode represents a key that is considered a wake key
+     * and is currently enabled by the user in Settings or for another reason.
+     */
+    private boolean isWakeKeyEnabled(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                return mWakeOnBackKeyPress;
+            case KeyEvent.KEYCODE_MENU:
+                return mWakeOnMenuKeyPress;
+            case KeyEvent.KEYCODE_ASSIST:
+                return mWakeOnAssistKeyPress;
+            case KeyEvent.KEYCODE_APP_SWITCH:
+                return mWakeOnAppSwitchKeyPress;
+        }
+        return true;
+    }
+
+    /**
      * When the screen is off we ignore some keys that might otherwise typically
      * be considered wake keys.  We filter them out here.
      *
@@ -5654,6 +5716,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KeyEvent.KEYCODE_STYLUS_BUTTON_TERTIARY:
             case KeyEvent.KEYCODE_STYLUS_BUTTON_TAIL:
                 return mStylusButtonsEnabled;
+            case KeyEvent.KEYCODE_MENU:
+                return mWakeOnMenuKeyPress;
+
+            case KeyEvent.KEYCODE_APP_SWITCH:
+                return mWakeOnAppSwitchKeyPress;
         }
 
         return true;
