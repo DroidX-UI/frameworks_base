@@ -1843,6 +1843,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mDefaultDisplayPolicy.takeScreenshot(TAKE_SCREENSHOT_FULLSCREEN, source);
     }
 
+    Runnable mBackLongPress = new Runnable() {
+        public void run() {
+            if (unpinActivity(false)) {
+                return;
+            }
+        }
+    };
+
     @Override
     public void showGlobalActions() {
         mHandler.removeMessages(MSG_DISPATCH_SHOW_GLOBAL_ACTIONS);
@@ -3491,6 +3499,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mPendingCapsLockToggle = false;
         }
 
+        if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
+            mHandler.removeCallbacks(mBackLongPress);
+        }
+
         if (isUserSetupComplete() && !keyguardOn) {
             if (mModifierShortcutManager.interceptKey(event)) {
                 dismissKeyboardShortcutsMenu();
@@ -3876,6 +3888,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     return true;
                 }
         }
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (unpinActivity(true)) {
+                if (down && repeatCount == 0) {
+                    mHandler.postDelayed(mBackLongPress, 2000);
+                }
+            }
+        }
+
         if (isValidGlobalKey(keyCode)
                 && mGlobalKeyManager.handleGlobalKey(mContext, keyCode, event)) {
             return true;
@@ -4054,6 +4075,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
             } catch (Exception e) {
                 Slog.w(TAG, "Could not dispatch event to device key handler", e);
+            }
+        }
+        return false;
+    }
+
+    private boolean unpinActivity(boolean checkOnly) {
+        if (!hasNavigationBar()) {
+            try {
+                if (ActivityTaskManager.getService().isInLockTaskMode()) {
+                    if (!checkOnly) {
+                        ActivityTaskManager.getService().stopSystemLockTaskMode();
+                    }
+                    return true;
+                }
+            } catch (RemoteException e) {
+                // ignore
             }
         }
         return false;
