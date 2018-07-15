@@ -36,4 +36,7 @@
     <string name="screenrecord_hevc_switch_label">Enable HEVC</string>
     <string name="screenrecord_hevc_switch_summary">Use more efficient HEVC video encoding</string>
 
+    <!-- Name of the clock in status bar [CHAR LIMIT=30] -->
+    <string name="clock">Clock</string>
+
 </resources>

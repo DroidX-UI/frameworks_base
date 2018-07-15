@@ -5526,6 +5526,16 @@ public final class Settings {
         public static final String TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK = "touchscreen_gesture_haptic_feedback";
 
         /**
+         * Whether to show the clock in the right or left position or show it in the center
+         * 0: show the clock in the left position (LTR)
+         * 1: show the clock in the center
+         * 2: show the clock in the right position (LTR)
+         * default: 0
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK = "status_bar_clock";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
@@ -5649,6 +5659,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE_VENDOR_HINT);
             PRIVATE_SETTINGS.add(DESKTOP_MODE);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
+            PRIVATE_SETTINGS.add(STATUS_BAR_CLOCK);
         }
 
         /**
