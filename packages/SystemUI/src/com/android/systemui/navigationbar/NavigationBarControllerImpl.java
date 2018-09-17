@@ -378,6 +378,12 @@ public class NavigationBarControllerImpl implements
                 v.removeOnAttachStateChangeListener(this);
             }
         });
+
+        try {
+            WindowManagerGlobal.getWindowManagerService().onOverlayChanged();
+        } catch (RemoteException e) {
+            // Do nothing.
+        }
     }
 
     @Override
@@ -466,6 +472,16 @@ public class NavigationBarControllerImpl implements
     @Nullable
     public NavigationBar getDefaultNavigationBar() {
         return mNavigationBars.get(mDisplayTracker.getDefaultDisplayId());
+    }
+
+    @Override
+    public void onDisplayReady(int displayId) {
+        mCommandQueueCallbacks.onDisplayReady(displayId);
+    }
+
+    @Override
+    public void onDisplayRemoved(int displayId) {
+        mCommandQueueCallbacks.onDisplayRemoved(displayId);
     }
 
     @NeverCompile
