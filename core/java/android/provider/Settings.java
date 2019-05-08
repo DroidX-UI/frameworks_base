@@ -5520,6 +5520,12 @@ public final class Settings {
          */
         @Readable
         public static final String DESKTOP_MODE = "desktop_mode";
+		
+		/**
+         * Swipe to screenshot
+         * @hide
+         */
+        public static final String SWIPE_TO_SCREENSHOT = "swipe_to_screenshot";
 
         /**
          * Whether to enable fingerprint wake-and-unlock.
