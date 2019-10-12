@@ -65,6 +65,7 @@
                 android:id="@+id/status_bar_start_side_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:clipChildren="false">
 
                 <include layout="@layout/heads_up_status_bar_layout" />
