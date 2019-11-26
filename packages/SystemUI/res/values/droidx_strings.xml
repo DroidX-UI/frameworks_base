@@ -105,4 +105,7 @@
 
     <!-- QS tiles-->
     <string name="tap_to_add_tiles">Tap on tiles to add or remove</string>
+    
+    <!-- DataSwitch Tile -->
+    <string name="qs_data_switch_label">Switch data card</string>
 </resources>
