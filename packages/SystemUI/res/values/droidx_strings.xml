@@ -47,4 +47,10 @@
     
      <!-- Udfps display mode provider class name -->
     <string name="config_udfpsDisplayModeProviderComponent">com.android.systemui.biometrics.DummyUdfpsDisplayModeProvider</string>
+
+    <!-- PowerShare QS tile -->
+    <string name="quick_settings_powershare_label">Wireless PowerShare</string>
+    <string name="quick_settings_powershare_off_powersave_label">Wireless PowerShare off\nBattery saver</string>
+    <string name="quick_settings_powershare_off_low_battery_label">Wireless PowerShare off\nBattery too low</string>
+    <string name="quick_settings_powershare_enabled_label">Wireless PowerShare is enabled</string>
 </resources>
