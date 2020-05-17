@@ -5675,12 +5675,6 @@ public final class Settings {
                 "lockscreen_scramble_pin_layout";
 
         /**
-         * Whether to take partial screenshot with volume down + power click.
-         * @hide
-         */
-        public static final String CLICK_PARTIAL_SCREENSHOT = "click_partial_screenshot";
-
-        /**
          * Whether to show the clock in the right or left position or show it in the center
          * 0: show the clock in the right position (LTR)
          * 1: show the clock in the center
@@ -5865,6 +5859,12 @@ public final class Settings {
          * @hide
          */
         public static final String DATA_DISABLED_ICON = "data_disabled_icon";
+
+        /**
+         * Whether to take partial screenshot with volume down + power click.
+         * @hide
+         */
+        public static final String CLICK_PARTIAL_SCREENSHOT = "click_partial_screenshot";
 
         /**
          * Keys we no longer back up under the current schema, but want to continue to
