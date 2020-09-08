@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 The LineageOS Project
+ * Copyright (C) 2020-2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,21 @@
 
 package com.android.systemui.qs.tiles;
 
+import static com.android.internal.custom.hardware.LiveDisplayManager.FEATURE_ANTI_FLICKER;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.service.quicksettings.Tile;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.android.internal.custom.hardware.LineageHardwareManager;
+import com.android.internal.custom.hardware.LiveDisplayManager;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.systemui.res.R;
@@ -41,18 +47,22 @@ import com.android.systemui.qs.tileimpl.QSTileImpl;
 
 import javax.inject.Inject;
 
-public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
-    public static final String TILE_SPEC = "reading_mode";
+public class AntiFlickerTile extends QSTileImpl<BooleanState> {
 
-    private final Icon mIcon = ResourceIcon.get(R.drawable.ic_qs_reader);
+    public static final String TILE_SPEC = "anti_flicker";
+
+    private boolean mAntiFlickerEnabled = true;
+    private boolean mReceiverRegistered;
+
+    private final Icon mIcon = ResourceIcon.get(R.drawable.ic_qs_anti_flicker);
 
     private static final Intent DISPLAY_SETTINGS = new Intent("android.settings.DISPLAY_SETTINGS");
 
-    private LineageHardwareManager mHardware;
+    private final LiveDisplayManager mLiveDisplay;
 
     @Inject
-    public ReadingModeTile(
+    public AntiFlickerTile(
             QSHost host,
             QsEventLogger uiEventLogger,
             @Background Looper backgroundLooper,
@@ -61,11 +71,42 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
             MetricsLogger metricsLogger,
             StatusBarStateController statusBarStateController,
             ActivityStarter activityStarter,
-            QSLogger qsLogger
-    ) {
+            QSLogger qsLogger) {
         super(host, uiEventLogger, backgroundLooper, mainHandler, falsingManager, metricsLogger,
                 statusBarStateController, activityStarter, qsLogger);
-        mHardware = LineageHardwareManager.getInstance(mContext);
+        mLiveDisplay = LiveDisplayManager.getInstance(mContext);
+        if (!updateConfig()) {
+            mContext.registerReceiver(mReceiver, new IntentFilter(
+                    "lineageos.intent.action.INITIALIZE_LIVEDISPLAY"));
+            mReceiverRegistered = true;
+        }
+    }
+
+    @Override
+    protected void handleDestroy() {
+        super.handleDestroy();
+        unregisterReceiver();
+    }
+
+    private void unregisterReceiver() {
+        if (mReceiverRegistered) {
+            mContext.unregisterReceiver(mReceiver);
+            mReceiverRegistered = false;
+        }
+    }
+
+    private boolean updateConfig() {
+        if (mLiveDisplay.getConfig() != null) {
+            mAntiFlickerEnabled = mLiveDisplay.getConfig().hasFeature(FEATURE_ANTI_FLICKER);
+            if (!isAvailable()) {
+                try {
+                    mHost.removeTile(getTileSpec());
+                } catch (NullPointerException e) {
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -75,9 +116,13 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
     @Override
     protected void handleClick(@Nullable View view) {
-        boolean newStatus = !isReadingModeEnabled();
-        mHardware.set(LineageHardwareManager.FEATURE_READING_ENHANCEMENT, newStatus);
+        setEnabled(!mLiveDisplay.isAntiFlickerEnabled());
         refreshState();
+    }
+
+    private void setEnabled(boolean enabled) {
+        Settings.System.putInt(mContext.getContentResolver(),
+                Settings.System.DISPLAY_ANTI_FLICKER, enabled ? 1 : 0);
     }
 
     @Override
@@ -87,28 +132,25 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public boolean isAvailable() {
-        return mHardware.isSupported(LineageHardwareManager.FEATURE_READING_ENHANCEMENT);
+        return mAntiFlickerEnabled;
     }
 
     @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
-        state.value = isReadingModeEnabled();
-        state.icon = mIcon;
-        if (state.value) {
-            state.contentDescription = mContext.getString(
-                    R.string.accessibility_quick_settings_reading_mode_on);
-            state.state = Tile.STATE_ACTIVE;
-        } else {
-            state.contentDescription = mContext.getString(
-                    R.string.accessibility_quick_settings_reading_mode_off);
-            state.state = Tile.STATE_INACTIVE;
+        try {
+            state.value = mLiveDisplay.isAntiFlickerEnabled();
+        } catch (NullPointerException e) {
+            state.value = false;
         }
+        state.icon = mIcon;
+        state.contentDescription = mContext.getString(R.string.quick_settings_anti_flicker);
+        state.state = (state.value ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         state.label = getTileLabel();
     }
 
     @Override
     public CharSequence getTileLabel() {
-        return mContext.getString(R.string.quick_settings_reading_mode);
+        return mContext.getString(R.string.quick_settings_anti_flicker);
     }
 
     @Override
@@ -120,7 +162,12 @@ public class ReadingModeTile extends QSTileImpl<BooleanState> {
     public void handleSetListening(boolean listening) {
     }
 
-    private boolean isReadingModeEnabled() {
-        return mHardware.get(LineageHardwareManager.FEATURE_READING_ENHANCEMENT);
-    }
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateConfig();
+            refreshState();
+            unregisterReceiver();
+        }
+    };
 }
