@@ -32,6 +32,7 @@ import com.android.systemui.qs.tiles.PowerShareTile
 import com.android.systemui.qs.tiles.WifiTile
 import com.android.systemui.qs.tiles.LiveDisplayTile
 import com.android.systemui.qs.tiles.ReadingModeTile
+import com.android.systemui.qs.tiles.AntiFlickerTile
 
 import dagger.Binds
 import dagger.Module
@@ -130,4 +131,10 @@ interface DroidXModule {
     @IntoMap
     @StringKey(ReadingModeTile.TILE_SPEC)
     fun bindReadingModeTile(readingModeTile: ReadingModeTile): QSTileImpl<*>
+
+    /** Inject AntiFlickerTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(AntiFlickerTile.TILE_SPEC)
+    fun bindAntiFlickerTile(antiFlickerTile: AntiFlickerTile): QSTileImpl<*>
 }
