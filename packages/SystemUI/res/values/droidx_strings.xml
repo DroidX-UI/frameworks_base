@@ -34,4 +34,10 @@
 
     <!-- Label for the area where tiles can be dragged in to remove -->
     <string name="drag_to_tap_to_remove_tiles">Tap an active tile or drag here to remove</string>
+
+    <!-- Screenshot chip -->
+    <!-- Label for UI element which allows deleting the screenshot [CHAR LIMIT=30] -->
+    <string name="screenshot_delete_label">Delete</string>
+    <!-- Content description indicating that tapping the element will allow deleting the screenshot [CHAR LIMIT=NONE] -->
+    <string name="screenshot_delete_description">Delete screenshot</string>
 </resources>
