@@ -277,5 +277,7 @@ public class SystemSettingsValidators {
             }
         });
         VALIDATORS.put(System.LIVE_DISPLAY_HINTED, new InclusiveIntegerRangeValidator(-3, 1));
+        VALIDATORS.put(System.ADAPTIVE_PLAYBACK_ENABLED, BOOLEAN_VALIDATOR);
+        VALIDATORS.put(System.ADAPTIVE_PLAYBACK_TIMEOUT, NON_NEGATIVE_INTEGER_VALIDATOR);
     }
 }
