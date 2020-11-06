@@ -969,6 +969,11 @@ final class DefaultPermissionGrantPolicy {
         grantPermissionsToSystemPackage(pm, "com.google.android.apps.nbu.files", userId, STORAGE_PERMISSIONS,
                 ALWAYS_LOCATION_PERMISSIONS, NEARBY_DEVICES_PERMISSIONS, PHONE_PERMISSIONS);
 
+        // Flipendo
+        grantSystemFixedPermissionsToSystemPackage(pm,
+                getDefaultProviderAuthorityPackage("com.google.android.flipendo", userId),
+                userId, SUSPEND_APP_PERMISSIONS);
+
         // Pixel Launcher
         grantSystemFixedPermissionsToSystemPackage(pm, "com.google.android.apps.nexuslauncher", userId,
                 PHONE_PERMISSIONS, STORAGE_PERMISSIONS);
