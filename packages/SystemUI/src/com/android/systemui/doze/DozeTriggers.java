@@ -29,6 +29,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.display.AmbientDisplayConfiguration;
 import android.os.SystemClock;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.text.format.Formatter;
 import android.util.IndentingPrintWriter;
 import android.util.Log;
@@ -367,6 +369,11 @@ public class DozeTriggers implements DozeMachine.Part {
     }
 
     private void gentleWakeUp(@DozeLog.Reason int reason) {
+        if (!mConfig.alwaysOnEnabled(UserHandle.USER_CURRENT)
+                && mConfig.isAmbientGestureEnabled(UserHandle.USER_CURRENT)) {
+            requestPulse(reason, true /* alreadyPerformedProxCheck */, null /* onPulseSupressedListener */);
+            return;
+        }
         // Log screen wake up reason (lift/pickup, tap, double-tap)
         Optional.ofNullable(DozingUpdateUiEvent.fromReason(reason))
                 .ifPresent(uiEventEnum -> mUiEventLogger.log(uiEventEnum, getKeyguardSessionId()));
