@@ -1,6 +1,7 @@
 package com.android.systemui.custom
 
 import com.android.systemui.qs.tileimpl.QSTileImpl
+import com.android.systemui.qs.tiles.CaffeineTile
 import com.android.systemui.qs.tiles.PowerShareTile
 
 import dagger.Binds
@@ -10,6 +11,12 @@ import dagger.multibindings.StringKey
 
 @Module
 interface CustomQSModule {
+     /** Inject CaffeineTile into tileMap in QSModule */
+    @Binds
+    @IntoMap
+    @StringKey(CaffeineTile.TILE_SPEC)
+    fun bindCaffeineTile(caffeineTile: CaffeineTile): QSTileImpl<*>
+
     /** Inject PowerShareTile into tileMap in QSModule */
     @Binds
     @IntoMap
