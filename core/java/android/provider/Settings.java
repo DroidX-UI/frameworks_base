@@ -5622,6 +5622,13 @@ public final class Settings {
          * @hide
          */
         public static final String POWERMENU_SETTINGS = "powermenu_settings";
+        
+        /**
+         * Whether to show heads up only for dialer and sms apps
+         * @hide
+         */
+        public static final String LESS_BORING_HEADS_UP = "less_boring_heads_up";
+
 
         /**
          * Whether to display lock in the power menu
