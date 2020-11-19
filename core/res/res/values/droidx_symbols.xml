@@ -58,4 +58,10 @@
     <!-- Whether device has a big physical display cutout -->
     <java-symbol type="bool" name="config_physicalDisplayCutoutCentered" />
 
+    <!-- Whether Pixel props is enabled -->
+    <java-symbol type="bool" name="config_enablePixelProps" />
+
+    <!-- Build properties from a GMS certified device -->
+    <java-symbol type="array" name="config_certifiedBuildProperties" />
+
 </resources>
