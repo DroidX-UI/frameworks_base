@@ -834,9 +834,9 @@ public final class SystemServer implements Dumpable {
                         uptimeMillis);
             }
 
-            Slog.i("halogenOS",
-                "Welcome to halogenOS! We believe that you'll love it. " +
-                "Ready to... uh... Q!");
+            Slog.i("DroidX-UI",
+                "Welcome to DroidX-UI! We believe that you'll love it. " +
+                "Ready to... uh... Vanilla Ice Creamss!");
 
             // In case the runtime switched since last boot (such as when
             // the old runtime was removed in an OTA), set the system
