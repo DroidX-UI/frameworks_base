@@ -94,11 +94,15 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     private ScreenRecordingAudioSource mAudioSource;
     private final MediaProjectionCaptureTarget mCaptureRegion;
     private final Handler mHandler;
+<<<<<<< HEAD
     private String mAvcProfileLevel;
 
     private boolean mLowQuality;
     private boolean mLongerDuration;
     private boolean mHEVC;
+=======
+    private int mMaxRefreshRate;
+>>>>>>> d109db3c40e5 (SystemUI: allow to limit the max framerate of built-in screen recorder)
 
     private Context mContext;
     ScreenMediaRecorderListener mListener;
@@ -113,6 +117,7 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         mCaptureRegion = captureRegion;
         mListener = listener;
         mAudioSource = audioSource;
+<<<<<<< HEAD
         mAvcProfileLevel = mContext.getResources().getString(
                 R.string.config_screenRecorderAVCProfileLevel);
     }
@@ -127,6 +132,10 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
 
     public void setHEVC(boolean hevc) {
         mHEVC = hevc;
+=======
+        mMaxRefreshRate = mContext.getResources().getInteger(
+                R.integer.config_screenRecorderMaxFramerate);
+>>>>>>> d109db3c40e5 (SystemUI: allow to limit the max framerate of built-in screen recorder)
     }
 
     private void prepare() throws IOException, RemoteException, RuntimeException {
@@ -165,6 +174,7 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getRealMetrics(metrics);
         int refreshRate = (int) wm.getDefaultDisplay().getRefreshRate();
+        if (mMaxRefreshRate != 0 && refreshRate > mMaxRefreshRate) refreshRate = mMaxRefreshRate;
         int[] dimens = getSupportedSize(metrics.widthPixels, metrics.heightPixels, refreshRate);
         int width = dimens[0];
         int height = dimens[1];
