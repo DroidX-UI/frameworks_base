@@ -35,4 +35,7 @@
 
      <!-- Unlock ripple animation -->
     <bool name="config_enableUnlockRippleAnimation">true</bool>
+    
+    	<!-- Udfps vendor code -->
+    <integer name="config_udfpsVendorCode">-1</integer>
 </resources>
