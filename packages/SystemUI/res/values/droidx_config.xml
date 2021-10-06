@@ -63,5 +63,8 @@
           <item>255,33</item>
           -->
     </string-array>
+     
+     <!-- Color of the UDFPS pressed view -->
+    <color name="config_udfpsColor">#ffffffff</color>
     
 </resources>
