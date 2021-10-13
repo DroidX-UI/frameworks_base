@@ -79,6 +79,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
     boolean mInflateSignalStrengths = false;
     @VisibleForTesting
     final MobileStatusTracker mMobileStatusTracker;
+    private final boolean mProviderModelBehavior;
 
     // Save the previous STATUS_HISTORY_SIZE states for logging.
     private final String[] mMobileStatusHistory = new String[STATUS_HISTORY_SIZE];
