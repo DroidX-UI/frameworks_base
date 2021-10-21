@@ -1013,6 +1013,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub implements D
             try {
                 mBar.toggleCameraFlash();
             } catch (RemoteException ex) {
+                Slog.e(TAG, "Unable to toggle camera flash:", ex);
             }
         }
     }

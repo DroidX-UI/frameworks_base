@@ -346,6 +346,8 @@ oneway interface IStatusBar
      */
     void showMediaOutputSwitcher(String packageName);
 
-    /** Extra additions. */
+    /**
+     * Toggles flashlight of the device
+     */
     void toggleCameraFlash();
 }
