@@ -51,6 +51,7 @@ import com.android.systemui.statusbar.notification.stack.NotificationStackScroll
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.RemoteInputQuickSettingsDisabler;
+import com.android.systemui.statusbar.policy.FlashlightController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -88,6 +89,7 @@ public class CentralSurfacesCommandQueueCallbacksTest extends SysuiTestCase {
     @Mock private StatusBarHideIconsForBouncerManager mStatusBarHideIconsForBouncerManager;
     @Mock private SystemBarAttributesListener mSystemBarAttributesListener;
     @Mock private Lazy<CameraLauncher> mCameraLauncherLazy;
+    @Mock private FlashlightController mFlashlightController;
 
     CentralSurfacesCommandQueueCallbacks mSbcqCallbacks;
 
@@ -120,7 +122,8 @@ public class CentralSurfacesCommandQueueCallbacksTest extends SysuiTestCase {
                 new DisableFlagsLogger(),
                 DEFAULT_DISPLAY,
                 mSystemBarAttributesListener,
-                mCameraLauncherLazy);
+                mCameraLauncherLazy,
+                mFlashlightController);
 
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         when(mRemoteInputQuickSettingsDisabler.adjustDisableFlags(anyInt()))
