@@ -101,4 +101,7 @@
 
     <!-- Name of the nfc status bar icon. -->
     <string name="status_bar_nfc">NFC</string>
+
+    <!-- Status bar - icons -->
+    <string name="status_bar_icons_title">Status bar icons</string>
 </resources>
