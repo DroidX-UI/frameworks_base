@@ -3321,6 +3321,9 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -3340,7 +3343,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         public void update() {
             setLockScreenMediaBlurLevel();
-	    setLockscreenDoubleTapToSleep();
+	    setDoubleTapToSleepGesture();
         }
     }
 
@@ -3350,11 +3353,9 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
         }
     }
 
-    private void setLockscreenDoubleTapToSleep() {
-        boolean isDoubleTapLockscreenEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN, 0, UserHandle.USER_CURRENT) == 1;
-        if (mNotificationPanelViewController != null) {
-            mNotificationPanelViewController.setLockscreenDoubleTapToSleep(isDoubleTapLockscreenEnabled);
+    private void setDoubleTapToSleepGesture() {
+        if (getNotificationShadeWindowViewController() != null) {
+            getNotificationShadeWindowViewController().setDoubleTapToSleepGesture();
         }
     }
 
