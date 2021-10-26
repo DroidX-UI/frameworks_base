@@ -54,6 +54,9 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import com.android.systemui.flags.FeatureFlags;
+import com.android.systemui.flags.Flags;
+
 /**
  * Monitors the mobile signal changes and update the SysUI icons.
  */
@@ -125,7 +128,8 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
             SubscriptionDefaults defaults,
             Looper receiverLooper,
             CarrierConfigTracker carrierConfigTracker,
-            MobileStatusTrackerFactory mobileStatusTrackerFactory
+            MobileStatusTrackerFactory mobileStatusTrackerFactory,
+            FeatureFlags featureFlags
     ) {
         super("MobileSignalController(" + info.getSubscriptionId() + ")", context,
                 NetworkCapabilities.TRANSPORT_CELLULAR, callbackHandler,
@@ -156,6 +160,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
             }
         };
         mMobileStatusTracker = mobileStatusTrackerFactory.createTracker(mMobileCallback);
+        mProviderModelBehavior = featureFlags.isEnabled(Flags.COMBINED_STATUS_BAR_SIGNAL_ICONS);
     }
 
     void setConfiguration(Config config) {
@@ -286,7 +291,8 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
                 qsInfo.description,
                 mSubscriptionInfo.getSubscriptionId(),
                 mCurrentState.roaming,
-                sbInfo.showTriangle);
+                sbInfo.showTriangle,
+                mCurrentState.isDefault);
         callback.setMobileDataIndicators(mobileDataIndicators);
     }
 
@@ -296,8 +302,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
         CharSequence qsDescription = null;
 
         if (mCurrentState.dataSim) {
-            // only show QS icons if the state is also default
-            if (!mCurrentState.isDefault) {
+            if (mProviderModelBehavior) {
                 return new QsInfo(qsTypeIcon, qsIcon, qsDescription);
             }
 
