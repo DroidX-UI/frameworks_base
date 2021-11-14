@@ -11227,6 +11227,7 @@ public final class Settings {
          * @hide
          */
         public static final String SCREEN_OFF_UDFPS_ENABLED = "screen_off_udfps_enabled";
+
         /**
          * Whether lockscreen weather is enabled.
          *
