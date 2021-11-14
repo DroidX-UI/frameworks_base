@@ -50,4 +50,7 @@
     <!-- Lock gesture -->
     <java-symbol type="string" name="gesture_locked_warning" />
 
+    <!-- Whether devices suports in-display fingerprint when screen is off -->
+    <java-symbol type="bool" name="config_supportsScreenOffUdfps" />
+
 </resources>
