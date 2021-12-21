@@ -6383,6 +6383,16 @@ public final class Settings {
         };
 
         /**
+         * @hide
+         */
+        public static final String UDFPS_ANIM = "udfps_anim";
+
+        /**
+         * @hide
+         */
+        public static final String UDFPS_ANIM_STYLE = "udfps_anim_style";
+
+        /**
          * Whether the torch launch gesture to long press the power button when the
          * screen is off should be enabled. *
          * 0: disabled
