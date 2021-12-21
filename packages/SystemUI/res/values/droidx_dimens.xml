@@ -59,18 +59,22 @@
      <dimen name="status_bar_battery_icon_width_landscape_o">22.0dip</dimen>
      
      <!-- QQS Brightness slider -->
-    <dimen name="qqs_top_brightness_margin_top">4dp</dimen>
-    <dimen name="qqs_top_brightness_margin_bottom">12dp</dimen>
-    <dimen name="qqs_bottom_brightness_margin_top">12dp</dimen>
+     <dimen name="qqs_top_brightness_margin_top">4dp</dimen>
+     <dimen name="qqs_top_brightness_margin_bottom">12dp</dimen>
+     <dimen name="qqs_bottom_brightness_margin_top">12dp</dimen>
 
-    <!-- QS Brightness slider -->
-    <dimen name="qs_top_brightness_margin_top">8dp</dimen>
-    <dimen name="qs_top_brightness_margin_bottom">10dp</dimen>
-    <dimen name="qs_bottom_brightness_margin_top">10dp</dimen>
+     <!-- QS Brightness slider -->
+     <dimen name="qs_top_brightness_margin_top">8dp</dimen>
+     <dimen name="qs_top_brightness_margin_bottom">10dp</dimen>
+     <dimen name="qs_bottom_brightness_margin_top">10dp</dimen>
 
-    <!-- QS Paddings -->
-    <dimen name="custom_qs_panel_padding_top">0dp</dimen>
-    <dimen name="custom_notification_row_padding">16dp</dimen>
-    <dimen name="custom_qs_tile_label_line_height">20sp</dimen>
+     <!-- QS Paddings -->
+     <dimen name="custom_qs_panel_padding_top">0dp</dimen>
+     <dimen name="custom_notification_row_padding">16dp</dimen>
+     <dimen name="custom_qs_tile_label_line_height">20sp</dimen>
+
+     <!-- Udfps fingerprint animation -->
+     <dimen name="udfps_animation_size">280dp</dimen>
+     <dimen name="udfps_animation_offset">0dp</dimen>
 
 </resources>
