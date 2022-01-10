@@ -6450,6 +6450,12 @@ public final class Settings {
         public static final String NAVBAR_LONG_PRESS_GESTURE = "navbar_long_press_gesture";
 
         /**
+         * Whether to show the ripple animation on fingerprint unlock
+         * @hide
+         */
+        public static final String AUTH_RIPPLE_ENABLED = "auth_ripple_enabled";
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
