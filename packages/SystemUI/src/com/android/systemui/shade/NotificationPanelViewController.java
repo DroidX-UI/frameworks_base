@@ -235,6 +235,7 @@ import com.android.systemui.util.Compile;
 import com.android.systemui.util.Utils;
 import com.android.systemui.util.time.SystemClock;
 import com.android.wm.shell.animation.FlingAnimationUtils;
+import com.android.systemui.tuner.TunerService;
 
 import dalvik.annotation.optimization.NeverCompile;
 
@@ -686,6 +687,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             };
 
     private final ActivityStarter mActivityStarter;
+    private final TunerService mTunerService;
 
     @Inject
     public NotificationPanelViewController(NotificationPanelView view,
@@ -783,7 +785,8 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
             SplitShadeStateController splitShadeStateController,
             PowerInteractor powerInteractor,
             KeyguardClockPositionAlgorithm keyguardClockPositionAlgorithm,
-            NaturalScrollingSettingObserver naturalScrollingSettingObserver) {
+            NaturalScrollingSettingObserver naturalScrollingSettingObserver,
+            TunerService tunerService) {
         keyguardStateController.addCallback(new KeyguardStateController.Callback() {
             @Override
             public void onKeyguardFadingAwayChanged() {
@@ -889,6 +892,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
                 mSplitShadeStateController.shouldUseSplitNotificationShade(mResources);
         mView.setWillNotDraw(!DEBUG_DRAWABLE);
         mShadeHeaderController = shadeHeaderController;
+        mTunerService = tunerService;
         mLayoutInflater = layoutInflater;
         mFeatureFlags = featureFlags;
         mAnimateBack = predictiveBackAnimateShade();
@@ -4608,7 +4612,7 @@ public final class NotificationPanelViewController implements ShadeSurface, Dump
         positionClockAndNotifications(true /* forceUpdate */);
     }
 
-    private final class ShadeAttachStateChangeListener implements View.OnAttachStateChangeListener {
+    private final class ShadeAttachStateChangeListener implements View.OnAttachStateChangeListener, TunerService.Tunable {
         @Override
         public void onViewAttachedToWindow(View v) {
             mFragmentService.getFragmentHostManager(mView)

@@ -1153,7 +1153,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         final boolean interactive = mDefaultDisplayPolicy.isAwake();
-	final boolean beganFromNonInteractive = mSingleKeyGestureDetector.beganFromNonInteractive();
 
         Slog.d(
                 TAG,

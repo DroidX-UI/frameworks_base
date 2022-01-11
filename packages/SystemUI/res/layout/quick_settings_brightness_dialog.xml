@@ -32,6 +32,8 @@
             android:minHeight="48dp"
             android:thumb="@null"
             android:background="@null"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             android:progressDrawable="@drawable/brightness_progress_drawable"
             android:splitTrack="false"
             android:clickable="true"
