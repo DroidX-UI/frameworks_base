@@ -130,6 +130,8 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
     private static final String PREF_CUSTOM_BGCOLOR ="monet_engine_custom_bgcolor";
     private static final String PREF_BGCOLOR_OVERRIDE ="monet_engine_bgcolor_override";
 
+    protected static String SYSTEM_BLACK_THEME = "system_black_theme";
+
     private final ThemeOverlayApplier mThemeManager;
     private final UserManager mUserManager;
     private final BroadcastDispatcher mBroadcastDispatcher;
@@ -906,6 +908,11 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
                     .map(key -> key + " -> " + categoryToPackage.get(key)).collect(
                             Collectors.joining(", ")));
         }
+
+        boolean isBlackTheme = mSecureSettings.getInt(SYSTEM_BLACK_THEME, 0) == 1;
+
+        mThemeManager.setIsBlackTheme(isBlackTheme);
+
         if (mNeedsOverlayCreation) {
             mNeedsOverlayCreation = false;
             mThemeManager.applyCurrentUserOverlays(categoryToPackage, new FabricatedOverlay[]{
@@ -915,6 +922,8 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
             mThemeManager.applyCurrentUserOverlays(categoryToPackage, null, currentUser,
                     managedProfiles);
         }
+
+        mThemeManager.applyBlackTheme(isBlackTheme);
     }
 
     private Style fetchThemeStyleFromSetting() {
