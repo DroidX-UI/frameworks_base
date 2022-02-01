@@ -42,6 +42,7 @@ import android.annotation.UiContext;
 import android.annotation.UserIdInt;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AppLockManager;
 import android.app.BroadcastOptions;
 import android.app.GameManager;
 import android.app.GrammaticalInflectionManager;
@@ -6499,6 +6500,14 @@ public abstract class Context {
      */
     @FlaggedApi(Flags.FLAG_SECURITY_STATE_SERVICE)
     public static final String SECURITY_STATE_SERVICE = "security_state";
+
+    /**
+     * {@link AppLockManager}.
+     *
+     * @see #getSystemService(String)
+     * @hide
+     */
+    public static final String APP_LOCK_SERVICE = "app_lock";
 
     /**
      * Determine whether the given permission is allowed for a particular

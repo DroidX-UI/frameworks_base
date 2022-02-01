@@ -56,4 +56,8 @@
     <!-- Whether device supports in-display fingerprint -->
     <java-symbol type="bool" name="config_supportsUdfps" />
 
+    <!-- App lock -->
+    <java-symbol type="string" name="unlock_application" />
+    <java-symbol type="array" name="config_appLockAllowedSystemApps" />
+
 </resources>
