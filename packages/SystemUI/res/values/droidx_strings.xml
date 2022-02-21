@@ -46,4 +46,7 @@
     <string name="global_action_restart_ui">SystemUI</string>
     
     <string name="status_bar_ims">VoLTE/VoWiFi</string>
+    
+     <!-- Udfps display mode provider class name -->
+    <string name="config_udfpsDisplayModeProviderComponent">com.android.systemui.biometrics.DummyUdfpsDisplayModeProvider</string>
 </resources>
