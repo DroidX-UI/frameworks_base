@@ -26,6 +26,7 @@ import static com.android.systemui.statusbar.events.SystemStatusAnimationSchedul
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -413,8 +414,11 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     @Override
     public void onTuningChanged(String key, String newValue) {
         boolean wasClockBlacklisted = mIsClockBlacklisted;
+        Context context = getContext();
+        if (context == null)
+            return;
         mIsClockBlacklisted = StatusBarIconController.getIconHideList(
-                getContext(), newValue).contains("clock");
+                context, newValue).contains("clock");
         if (wasClockBlacklisted && !mIsClockBlacklisted) {
             showClock(false);
         }
