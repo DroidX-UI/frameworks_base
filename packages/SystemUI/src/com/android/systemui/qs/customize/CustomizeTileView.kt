@@ -47,7 +47,7 @@ class CustomizeTileView(context: Context) : QSTileViewImpl(context, collapsed = 
         return if (showAppLabel && !TextUtils.isEmpty(text)) {
             VISIBLE
         } else {
-            GONE
+            INVISIBLE
         }
     }
 
