@@ -91,6 +91,7 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
     @Override
     protected void onViewAttached() {
         super.onViewAttached();
+        mView.updateColumns();
     }
 
     @Override
@@ -100,6 +101,7 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
 
     private void setMaxTiles(int parseNumTiles) {
         mView.setMaxTiles(parseNumTiles);
+        mView.updateColumns();
         setTiles();
     }
 
@@ -110,6 +112,7 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
             setMaxTiles(newMaxTiles);
         }
         updateMediaExpansion();
+        mView.updateColumns();
     }
 
     @Override

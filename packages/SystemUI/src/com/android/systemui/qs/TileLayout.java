@@ -132,7 +132,7 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
         Resources res = getResources();
         int columns = useSmallLandscapeLockscreenResources()
                 ? res.getInteger(R.integer.small_land_lockscreen_quick_settings_num_columns)
-                : res.getInteger(R.integer.quick_settings_num_columns);
+                : res.getInteger(R.integer.quick_qs_panel_max_tiles);
         mResourceColumns = Math.max(1, columns);
         mResourceCellHeight = res.getDimensionPixelSize(mResourceCellHeightResId);
         mCellMarginHorizontal = res.getDimensionPixelSize(R.dimen.qs_tile_margin_horizontal);
@@ -170,7 +170,7 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
         return true;
     }
 
-    private boolean updateColumns() {
+    public boolean updateColumns() {
         int oldColumns = mColumns;
         mColumns = Math.min(mResourceColumns, mMaxColumns);
         return oldColumns != mColumns;
