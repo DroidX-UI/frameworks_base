@@ -19,5 +19,7 @@
 
     <!-- Boost Framework -->
     <java-symbol type="bool" name="config_supportsBoostFramework" />
-
+    
+    <!-- Lock gesture -->
+    <string name="gesture_locked_warning">Swipe again to unlock gestures</string>
 </resources>
