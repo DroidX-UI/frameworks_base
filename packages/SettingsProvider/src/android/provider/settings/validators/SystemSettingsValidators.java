@@ -249,5 +249,6 @@ public class SystemSettingsValidators {
         VALIDATORS.put(System.SWIPE_TO_SCREENSHOT, BOOLEAN_VALIDATOR);
         VALIDATORS.put(System.STATUS_BAR_BATTERY_STYLE, new InclusiveIntegerRangeValidator(0, 25));
         VALIDATORS.put(System.NAVIGATION_BAR_HINT, BOOLEAN_VALIDATOR);
+        VALIDATORS.put(System.NAVIGATION_BAR_IME_SPACE, ANY_INTEGER_VALIDATOR);
     }
 }

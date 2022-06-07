@@ -109,5 +109,6 @@ public class SystemSettings {
         Settings.System.NOTIFICATION_COOLDOWN_VIBRATE_UNLOCKED,
         Settings.System.NETWORK_TRAFFIC_STATE,
         Settings.System.NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD
+        Settings.System.NAVIGATION_BAR_IME_SPACE,
     };
 }
