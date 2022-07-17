@@ -417,7 +417,7 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
             return false;
         }
 
-        if (!mReTicker && mLessBoringHeadsUp && shouldSkipHeadsUp(entry)) {
+        if (mLessBoringHeadsUp && shouldSkipHeadsUp(entry)) {
             mLogger.logNoHeadsUpShouldSkipPackage(entry);
             return false;
         }
