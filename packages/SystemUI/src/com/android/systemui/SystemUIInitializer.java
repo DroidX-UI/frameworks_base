@@ -138,7 +138,7 @@ public abstract class SystemUIInitializer {
         Dependency dependency = mSysUIComponent.createDependency();
         dependency.start();
 
-        if (mInitializeComponents) {
+        if (initializeComponents) {
             mSysUIComponent.createKeyguardSmartspaceController();
         }
     }
