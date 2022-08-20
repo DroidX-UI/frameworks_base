@@ -69,4 +69,8 @@
     <!-- Whether key handler sends intent when changing slider position -->
     <string name="config_alertSliderIntent"></string>
 
+    <!-- Parallel space max count. Should overlay according to device
+         performance. -->
+    <integer name="config_parallelSpaceMaxCount">9</integer>
+
 </resources>
