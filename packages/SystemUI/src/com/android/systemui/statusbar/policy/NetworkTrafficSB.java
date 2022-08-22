@@ -17,6 +17,8 @@ import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.plugins.DarkIconDispatcher.DarkReceiver;
 import com.android.systemui.statusbar.StatusIconDisplayable;
 
+import java.util.ArrayList;
+
 public class NetworkTrafficSB extends NetworkTraffic implements DarkReceiver, StatusIconDisplayable {
 
     public static final String SLOT = "networktraffic";
@@ -74,6 +76,14 @@ public class NetworkTrafficSB extends NetworkTraffic implements DarkReceiver, St
     @Override
     protected RelativeSizeSpan getUnitRelativeSizeSpan() {
         return new RelativeSizeSpan(0.60f);
+    }
+
+    @Override
+    public void onDarkChanged(ArrayList<Rect> areas, float darkIntensity, int tint) {
+        if (!mIsEnabled) return;
+        mTintColor = DarkIconDispatcher.getTint(areas, this, tint);
+        setTextColor(mTintColor);
+        updateTrafficDrawable();
     }
 
     @Override
