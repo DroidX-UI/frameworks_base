@@ -56,6 +56,9 @@ public class QSPanel extends LinearLayout implements Tunable {
 
     public static final String QS_SHOW_BRIGHTNESS = "qs_show_brightness";
     public static final String QS_SHOW_HEADER = "qs_show_header";
+    
+    public static final String QS_SHOW_AUTO_BRIGHTNESS =
+            Settings.Secure.QS_SHOW_AUTO_BRIGHTNESS;
 
     private static final String TAG = "QSPanel";
 
@@ -72,6 +75,8 @@ public class QSPanel extends LinearLayout implements Tunable {
 
     @Nullable
     protected View mBrightnessView;
+    protected View mAutoBrightnessView;
+    
     @Nullable
     protected BrightnessSliderController mToggleSliderController;
 
@@ -80,6 +85,7 @@ public class QSPanel extends LinearLayout implements Tunable {
 
     protected boolean mExpanded;
     protected boolean mListening;
+    protected boolean mIsAutomaticBrightnessAvailable = false;
 
     private final List<OnConfigurationChangedListener> mOnConfigurationChangedListeners =
             new ArrayList<>();
@@ -139,6 +145,9 @@ public class QSPanel extends LinearLayout implements Tunable {
         setOrientation(VERTICAL);
 
         mMovableContentStartIndex = getChildCount();
+        
+        mIsAutomaticBrightnessAvailable = getResources().getBoolean(
+                com.android.internal.R.bool.config_automatic_brightness_available);
 
     }
 
@@ -210,6 +219,7 @@ public class QSPanel extends LinearLayout implements Tunable {
         }
         addView(view, 0);
         mBrightnessView = view;
+        mAutoBrightnessView = view.findViewById(R.id.brightness_icon);
 
         setBrightnessViewMargin();
 
@@ -350,6 +360,16 @@ public class QSPanel extends LinearLayout implements Tunable {
         if (QS_SHOW_BRIGHTNESS.equals(key) && mBrightnessView != null) {
             updateViewVisibilityForTuningValue(mBrightnessView, newValue);
         }
+        switch (key) {
+            case QS_SHOW_AUTO_BRIGHTNESS:
+                if (mAutoBrightnessView != null) {
+                    mAutoBrightnessView.setVisibility(mIsAutomaticBrightnessAvailable &&
+                            TunerService.parseIntegerSwitch(newValue, true) ? View.VISIBLE : View.GONE);
+                }
+                break;
+            default:
+                break;
+         }
     }
 
     private void updateViewVisibilityForTuningValue(View view, @Nullable String newValue) {
