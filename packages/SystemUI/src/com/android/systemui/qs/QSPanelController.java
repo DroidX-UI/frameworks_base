@@ -110,6 +110,7 @@ public class QSPanelController extends QSPanelControllerBase<QSPanel> {
         super.onViewAttached();
 
         updateMediaDisappearParameters();
+        mTunerService.addTunable(mView, QSPanel.QS_SHOW_AUTO_BRIGHTNESS);
 
         mTunerService.addTunable(mView, QS_SHOW_BRIGHTNESS);
         mView.updateResources();
