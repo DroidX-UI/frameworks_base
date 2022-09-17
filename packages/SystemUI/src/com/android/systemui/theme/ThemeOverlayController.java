@@ -476,10 +476,6 @@ public class ThemeOverlayController implements CoreStartable, Dumpable, TunerSer
             reevaluateSystemTheme(true /* forceReload */);
         });
 
-        if (!mIsMonetEnabled) {
-            return;
-        }
-
         mUserTracker.addCallback(mUserTrackerCallback, mMainExecutor);
 
         mDeviceProvisionedController.addCallback(mDeviceProvisionedListener);
