@@ -72,4 +72,7 @@
     <dimen name="custom_notification_row_padding">16dp</dimen>
     <dimen name="custom_qs_tile_label_line_height">20sp</dimen>
 
+    <!-- Bluetooth dialog -->
+    <dimen name="bluetooth_dialog_active_device_bottom_margin">4dp</dimen>
+
 </resources>
