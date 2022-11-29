@@ -5896,6 +5896,12 @@ public final class Settings {
          */
         public static final String THREE_FINGER_GESTURE = "three_finger_gesture";
 
+        /**        
+         * Haptic feedback on volume panel
+         * @hide
+         */ 
+        public static final String VOLUME_PANEL_HAPTIC_FEEDBACK = "volume_panel_haptic_feedback";
+
         /**
          * These are all public system settings
          *
