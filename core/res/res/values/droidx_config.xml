@@ -49,4 +49,7 @@
     <string-array name="config_postNotificationIgnoredApps" translatable="false">
     </string-array>
 
+    <!-- The list of package IDs that are allowed to skip camera high frame rate checks. -->
+    <string-array name="config_cameraHFRPrivAppList" translatable="false" />
+
 </resources>
