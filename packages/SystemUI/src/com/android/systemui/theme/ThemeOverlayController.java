@@ -413,10 +413,6 @@ public class ThemeOverlayController extends CoreStartable implements Dumpable {
                 },
                 UserHandle.USER_ALL);
 
-        if (!mIsMonetEnabled) {
-            return;
-        }
-
         mUserTracker.addCallback(mUserTrackerCallback, mMainExecutor);
 
         mDeviceProvisionedController.addCallback(mDeviceProvisionedListener);
@@ -468,7 +464,11 @@ public class ThemeOverlayController extends CoreStartable implements Dumpable {
         });
     }
 
-    private void reevaluateSystemTheme(boolean forceReload) {
+    private void restartSystemUI() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    protected void reevaluateSystemTheme(boolean forceReload) {
         final WallpaperColors currentColors = mCurrentColors.get(mUserTracker.getUserId());
         final int mainColor;
         if (currentColors == null) {
