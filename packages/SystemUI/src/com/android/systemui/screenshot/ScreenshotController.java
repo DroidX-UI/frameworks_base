@@ -165,7 +165,7 @@ public class ScreenshotController {
     /**
      * Structure returned by the SaveImageInBackgroundTask
      */
-    static class SavedImageData {
+    public static class SavedImageData {
         public Uri uri;
         public Notification.Action deleteAction;
         public List<Notification.Action> smartActions;
@@ -1063,6 +1063,8 @@ public class ScreenshotController {
                 } else {
                     doPostAnimation(imageData);
                 }
+                mNotificationsController.showPostActionNotification(
+                    imageData, mScreenBitmap);
             });
         }
     }
