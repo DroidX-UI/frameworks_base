@@ -17,4 +17,7 @@
     <string name="reboot_title">Reboot</string>
     <string name="reboot_message">Rebooting system</string>
 
+    <!-- Boost Framework -->
+    <java-symbol type="bool" name="config_supportsBoostFramework" />
+
 </resources>
