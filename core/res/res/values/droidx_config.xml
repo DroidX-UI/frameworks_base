@@ -163,4 +163,7 @@
      <!-- Device model (Build.MODEL) to spoof for netflix, if not empty -->
      <string name="config_netflixSpoofModel" translatable="false"></string>
 
+     <!-- Whether to use Richtap vibration -->
+    <bool name="config_usesRichtapVibration">false</bool>
+
 </resources>

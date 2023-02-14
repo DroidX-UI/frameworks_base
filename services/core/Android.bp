@@ -241,6 +241,7 @@ java_library_static {
         "powerstats_flags_lib",
         "locksettings_flags_lib",
         "framework-droidx.static",
+        "vendor.aac.hardware.richtap.vibrator",
     ],
     javac_shard_size: 50,
     javacflags: [
