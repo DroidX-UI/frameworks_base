@@ -50,6 +50,8 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.os.PowerManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
