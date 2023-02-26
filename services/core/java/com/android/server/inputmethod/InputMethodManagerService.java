@@ -218,6 +218,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.android.internal.lineage.hardware.LineageHardwareManager;
+
 /**
  * This class provides a system service that manages input methods.
  */
@@ -262,8 +264,7 @@ public final class InputMethodManagerService extends IInputMethodManager.Stub
 
     private static final int NOT_A_SUBTYPE_ID = InputMethodUtils.NOT_A_SUBTYPE_ID;
     private static final String TAG_TRY_SUPPRESSING_IME_SWITCHER = "TrySuppressingImeSwitcher";
-    private static final String HANDLER_THREAD_NAME = "android.imms";
-
+    private static final String HANDLER_THREAD_NAME = "android.imms";    
     /**
      * A protected broadcast intent action for internal use for {@link PendingIntent} in
      * the notification.
@@ -398,6 +399,8 @@ public final class InputMethodManagerService extends IInputMethodManager.Stub
     @GuardedBy("ImfLock.class")
     @Nullable
     Future<?> mImeDrawsImeNavBarResLazyInitFuture;
+    
+    private LineageHardwareManager mLineageHardware;
 
     static class SessionState {
         final ClientState client;
