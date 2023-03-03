@@ -189,6 +189,7 @@ import com.android.internal.accessibility.AccessibilityShortcutController;
 import com.android.internal.accessibility.util.AccessibilityUtils;
 import com.android.internal.app.AssistUtils;
 import com.android.internal.inputmethod.SoftInputShowHideReason;
+import com.android.internal.lineage.hardware.LineageHardwareManager;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.internal.os.RoSystemProperties;
@@ -227,6 +228,8 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.android.internal.util.droidx.DroidXUtils;
 
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
@@ -642,6 +645,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_HANDLE_ALL_APPS = 22;
     private static final int MSG_LAUNCH_ASSIST = 23;
     private static final int MSG_RINGER_TOGGLE_CHORD = 24;
+    
+    private LineageHardwareManager mLineageHardware;
 
     private class PolicyHandler extends Handler {
         @Override
@@ -5074,6 +5079,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         mAutofillManagerInternal = LocalServices.getService(AutofillManagerInternal.class);
         mGestureLauncherService = LocalServices.getService(GestureLauncherService.class);
+        mLineageHardware = LineageHardwareManager.getInstance(mContext);
     }
 
     /** {@inheritDoc} */
@@ -6056,11 +6062,5 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // new state will be like STATE=HDMI=1
             return state.contains(HDMI_EXIST);
         }
-    }
-    
-    @Override
-    public void sendCustomAction(Intent intent) {
-        String action = intent.getAction();
-
     }
 }
