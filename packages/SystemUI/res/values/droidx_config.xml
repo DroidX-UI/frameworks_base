@@ -18,7 +18,7 @@
     <string name="config_screenRecorderAVCProfileLevel" translatable="false">4.2</string>
 
     <!-- If not zero, limits the internal screen recorder's framerate to the set value. -->
-    <integer name="config_screenRecorderMaxFramerate">0</integer>-->
+    <integer name="config_screenRecorderMaxFramerate">0</integer>
 
     <!-- Should we listen for fingerprints when the screen is off?  Devices
          with a rear-mounted sensor want this, but certain devices have
