@@ -11218,7 +11218,15 @@ public final class Settings {
          */
         public static final String EXTRA_AUTOMATIC_POWER_SAVE_MODE =
                 "extra_automatic_power_save_mode";
-
+			
+        /**
+         * Whether UDFPS is active while the screen is off.
+         *
+         * <p>1 if true, 0 or unset otherwise.
+         *
+         * @hide
+         */
+        public static final String SCREEN_OFF_UDFPS_ENABLED = "screen_off_udfps_enabled";
         /**
          * Whether lockscreen weather is enabled.
          *
