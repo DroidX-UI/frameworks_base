@@ -45,6 +45,7 @@ import android.os.Message;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemProperties;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RSIllegalArgumentException;
@@ -62,6 +63,7 @@ import com.android.internal.app.IAppOpsService;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -280,6 +282,25 @@ public class Camera {
     private static final int CAMERA_FACE_DETECTION_SW = 1;
 
     /**
+     * @hide
+     */
+    public static boolean shouldExposeAuxCamera() {
+        /**
+         * Force to expose only two cameras
+         * if the package name does not falls in this bucket
+         */
+        String packageName = ActivityThread.currentOpPackageName();
+	if (packageName == null) {
+            return true;
+        }
+        List<String> packageList = Arrays.asList(
+                SystemProperties.get("vendor.camera.aux.packagelist", packageName).split(","));
+        List<String> packageExcludelist = Arrays.asList(
+                SystemProperties.get("vendor.camera.aux.packageexcludelist", "").split(","));
+        return packageList.contains(packageName) && !packageExcludelist.contains(packageName);
+    }
+
+    /**
      * Returns the number of physical cameras available on this device.
      * The return value of this method might change dynamically if the device
      * supports external cameras and an external camera is connected or
@@ -294,7 +315,20 @@ public class Camera {
      * @return total number of accessible camera devices, or 0 if there are no
      *   cameras or an error was encountered enumerating them.
      */
-    public native static int getNumberOfCameras();
+    public static int getNumberOfCameras() {
+        int numberOfCameras = _getNumberOfCameras();
+        if (!shouldExposeAuxCamera() && numberOfCameras > 2) {
+            numberOfCameras = 2;
+        }
+        return numberOfCameras;
+    }
+
+    /**
+     * Returns the number of physical cameras available on this device.
+     *
+     * @hide
+     */
+    public native static int _getNumberOfCameras();
 
     /**
      * Returns the information about a particular camera.
@@ -305,6 +339,9 @@ public class Camera {
      *    low-level failure).
      */
     public static void getCameraInfo(int cameraId, CameraInfo cameraInfo) {
+        if (cameraId >= getNumberOfCameras()) {
+            throw new RuntimeException("Unknown camera ID");
+        }
         _getCameraInfo(cameraId, cameraInfo);
         IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
         IAudioService audioService = IAudioService.Stub.asInterface(b);
@@ -520,6 +557,9 @@ public class Camera {
 
     /** used by Camera#open, Camera#open(int) */
     Camera(int cameraId) {
+        if (cameraId >= getNumberOfCameras()) {
+            throw new RuntimeException("Unknown camera ID");
+        }
         int err = cameraInit(cameraId);
         if (checkInitErrors(err)) {
             if (err == -EACCES) {
@@ -1770,13 +1810,31 @@ public class Camera {
                     } catch (RemoteException e) {
                         Log.e(TAG, "Audio service is unavailable for queries");
                     }
-                    _enableShutterSound(false);
+                    try {
+                        _enableShutterSound(false);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Couldn't disable shutter sound");
+                    }
                 } else {
                     enableShutterSound(mShutterSoundEnabledFromApp);
                 }
             }
         }
     }
+
+    /**
+     * Send a vendor-specific camera command
+     *
+     * @hide
+     */
+    public final void sendVendorCommand(int cmd, int arg1, int arg2) {
+        if (cmd < 1000) {
+            throw new IllegalArgumentException("Command numbers must be at least 1000");
+        }
+        _sendVendorCommand(cmd, arg1, arg2);
+    }
+
+    private native final void _sendVendorCommand(int cmd, int arg1, int arg2);
 
     /**
      * Callback interface for zoom changes during a smooth zoom operation.
@@ -2000,6 +2058,23 @@ public class Camera {
          * as a set. Either they are all valid, or none of them are.
          */
         public Point mouth = null;
+
+        /**
+         * {@hide}
+         */
+        public int smileDegree = 0;
+        /**
+         * {@hide}
+         */
+        public int smileScore = 0;
+        /**
+         * {@hide}
+         */
+        public int blinkDetected = 0;
+        /**
+         * {@hide}
+         */
+        public int faceRecognised = 0;
     }
 
     /**
@@ -3854,6 +3929,7 @@ public class Camera {
          * @see #getSceneMode()
          */
         public void setSceneMode(String value) {
+            if(getSupportedSceneModes() == null) return;
             set(KEY_SCENE_MODE, value);
         }
 
@@ -3891,6 +3967,7 @@ public class Camera {
          * @see #getFlashMode()
          */
         public void setFlashMode(String value) {
+	    if(getSupportedFlashModes() == null) return;
             set(KEY_FLASH_MODE, value);
         }
 
@@ -4575,6 +4652,7 @@ public class Camera {
             splitter.setString(str);
             int index = 0;
             for (String s : splitter) {
+                s = s.replaceAll("\\s","");
                 output[index++] = Integer.parseInt(s);
             }
         }
@@ -4645,7 +4723,7 @@ public class Camera {
         // Example string: "(10000,26623),(10000,30000)". Return null if the
         // passing string is null or the size is 0.
         private ArrayList<int[]> splitRange(String str) {
-            if (str == null || str.charAt(0) != '('
+            if (str == null || str.isEmpty() || str.charAt(0) != '('
                     || str.charAt(str.length() - 1) != ')') {
                 Log.e(TAG, "Invalid range list string=" + str);
                 return null;
@@ -4671,7 +4749,7 @@ public class Camera {
         // the passing string is null or the size is 0 or (0,0,0,0,0).
         @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
         private ArrayList<Area> splitArea(String str) {
-            if (str == null || str.charAt(0) != '('
+            if (str == null || str.isEmpty() || str.charAt(0) != '('
                     || str.charAt(str.length() - 1) != ')') {
                 Log.e(TAG, "Invalid area string=" + str);
                 return null;
