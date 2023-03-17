@@ -206,7 +206,6 @@ public class UdfpsController implements DozeReceiver, Dumpable {
     private int[][] mBrightnessAlphaArray;
     
     private final AmbientDisplayConfiguration mAmbientDisplayConfiguration;
-    private final SecureSettings mSecureSettings;
     private boolean mScreenOffFod;
 
     @VisibleForTesting
@@ -839,7 +838,6 @@ public class UdfpsController implements DozeReceiver, Dumpable {
         mUdfpsVendorCode = mContext.getResources().getInteger(R.integer.config_udfps_vendor_code);
 
         mAmbientDisplayConfiguration = new AmbientDisplayConfiguration(mContext);
-        mSecureSettings = secureSettings;
         updateScreenOffFodState();
         mSecureSettings.registerContentObserver(Settings.Secure.SCREEN_OFF_UDFPS_ENABLED,
             new ContentObserver(mainHandler) {
