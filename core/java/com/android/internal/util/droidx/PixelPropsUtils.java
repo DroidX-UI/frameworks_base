@@ -49,9 +49,18 @@ public class PixelPropsUtils {
 
     // Packages to Spoof as Pixel 7 Pro
     private static final String[] packagesToChangePixel7Pro = {
+            "com.google.android.inputmethod.latin",
+            "com.google.android.setupwizard",
+            "com.google.android.apps.turbo",
+            "com.google.android.googlequicksearchbox",
             "com.google.android.apps.wallpaper",
+            "com.google.android.apps.wallpaper.pixel",
             "com.google.android.apps.privacy.wildlife",
-            "com.google.android.inputmethod.latin"
+            "com.google.android.apps.googleassistant",
+            "com.google.android.apps.nbu.files",
+            "com.google.android.apps.podcasts",
+            "com.google.android.contacts",
+            "com.google.android.deskclock"
     };
 
     // Packages to Spoof as Pixel XL
@@ -65,7 +74,8 @@ public class PixelPropsUtils {
             "com.samsung.android.gearnplugin",
             "com.samsung.android.modenplugin",
             "com.samsung.android.neatplugin",
-            "com.samsung.android.waterplugin"
+            "com.samsung.android.waterplugin",
+            "com.google.android.apps.photos"
     };
 
     // Packages to Spoof as Pixel 7 Pro
@@ -270,6 +280,8 @@ public class PixelPropsUtils {
                 if (processName.equals("com.google.android.gms.unstable")) {
                     sIsGms = true;
                     spoofBuildGms();
+                }else{
+                    propsToChangePixel7Pro.forEach((k, v) -> setPropValue(k, v));
                 }
                 return;
             }
