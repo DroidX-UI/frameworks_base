@@ -86,20 +86,14 @@ public class PixelPropsUtils {
             "com.nhs.online.nhsonline"
     };
 
-    // Packages to Keep with original device
-    private static final String[] packagesToKeep = {
-            "com.google.android.GoogleCamera",
-            "com.google.android.GoogleCamera.Cameight",
-            "com.google.android.GoogleCamera.Go",
-            "com.google.android.GoogleCamera.Urnyx",
-            "com.google.android.GoogleCameraAsp",
-            "com.google.android.GoogleCameraCVM",
-            "com.google.android.GoogleCameraEng",
-            "com.google.android.GoogleCameraEng2",
-            "com.google.android.GoogleCameraGood",
+    private static final String[] customGoogleCameraPackages = {
             "com.google.android.MTCL83",
             "com.google.android.UltraCVM",
-            "com.google.android.apps.cameralite",
+            "com.google.android.apps.cameralite"
+    };
+
+    // Packages to Keep with original device
+    private static final String[] packagesToKeep = {
             "com.google.android.dialer",
             "com.google.ar.core",
             "com.google.android.youtube",
@@ -229,11 +223,19 @@ public class PixelPropsUtils {
         propsToChangeF4.put("MANUFACTURER", "Xiaomi");
     }
 
+    private static boolean isGoogleCameraPackage(String packageName){
+        return packageName.startsWith("com.google.android.GoogleCamera") ||
+            Arrays.asList(customGoogleCameraPackages).contains(packageName);
+    }
+
     public static void setProps(String packageName) {
         if (packageName == null || packageName.isEmpty()) {
             return;
         }
         if (Arrays.asList(packagesToKeep).contains(packageName)) {
+            return;
+        }
+        if (isGoogleCameraPackage(packageName)) {
             return;
         }
         if (packageName.startsWith("com.google.")
