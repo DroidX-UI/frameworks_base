@@ -157,7 +157,7 @@ public class RecordingController
      * @param startIntent Intent to start a recording
      * @param stopIntent Intent to stop a recording
      */
-    public void startCountdown(long ms, long interval, PendingIntent startIntent,
+    public void startCountdown(int ms, int interval, PendingIntent startIntent,
             PendingIntent stopIntent) {
         mIsStarting = true;
         mStopIntent = stopIntent;

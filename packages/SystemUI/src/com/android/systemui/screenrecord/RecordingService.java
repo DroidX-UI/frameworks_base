@@ -84,6 +84,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
     private static final String EXTRA_LOW_QUALITY = "extra_lowQuality";
     private static final String EXTRA_LONGER_DURATION = "extra_longerDuration";
     private final static String EXTRA_HEVC = "extra_HEVC";
+    private static final String EXTRA_SKIP_TIME = "extra_skipTime";
 
     private static final String ACTION_START = "com.android.systemui.screenrecord.START";
     private static final String ACTION_STOP = "com.android.systemui.screenrecord.STOP";
@@ -108,6 +109,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
     private boolean mLowQuality;
     private boolean mLongerDuration;
     private boolean mHEVC;
+    private boolean mSkipTime;
     private boolean mShowStopDot;
     private boolean mIsDotAtRight;
     private boolean mDotShowing;
@@ -146,7 +148,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
             int audioSource, boolean showTaps,
             @Nullable MediaProjectionCaptureTarget captureTarget,
             boolean showStopDot, boolean lowQuality,
-            boolean longerDuration, boolean hevc) {
+            boolean longerDuration, boolean hevc, boolean skipTime) {
         return new Intent(context, RecordingService.class)
                 .setAction(ACTION_START)
                 .putExtra(EXTRA_RESULT_CODE, resultCode)
@@ -156,7 +158,8 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
                 .putExtra(EXTRA_SHOW_STOP_DOT, showStopDot)
                 .putExtra(EXTRA_LOW_QUALITY, lowQuality)
                 .putExtra(EXTRA_LONGER_DURATION, longerDuration)
-                .putExtra(EXTRA_HEVC, hevc);
+                .putExtra(EXTRA_HEVC, hevc)
+                .putExtra(EXTRA_SKIP_TIME, skipTime);
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
@@ -181,6 +184,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
                 mLowQuality = intent.getBooleanExtra(EXTRA_LOW_QUALITY, false);
                 mLongerDuration = intent.getBooleanExtra(EXTRA_LONGER_DURATION, false);
                 mHEVC = intent.getBooleanExtra(EXTRA_HEVC, true);
+                mSkipTime = intent.getBooleanExtra(EXTRA_SKIP_TIME, false);
 
                 mOriginalShowTaps = Settings.System.getInt(
                         getApplicationContext().getContentResolver(),

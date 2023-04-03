@@ -65,9 +65,9 @@ import java.util.List;
 public class ScreenRecordDialog extends SystemUIDialog {
     private static final List<ScreenRecordingAudioSource> MODES = Arrays.asList(INTERNAL, MIC,
             MIC_AND_INTERNAL);
-    private static final long DELAY_MS = 3000;
-    private static final long NO_DELAY = 100;
-    private static final long INTERVAL_MS = 1000;
+    private static final int DELAY_MS = 3000;
+    private static final int NO_DELAY = 100;
+    private static final int INTERVAL_MS = 1000;
     private static final String TAG = "ScreenRecordDialog";
     private static final String PREFS = "screenrecord_";
     private static final String PREF_TAPS = "show_taps";
@@ -211,7 +211,7 @@ public class ScreenRecordDialog extends SystemUIDialog {
                 RecordingService.getStartIntent(
                         mUserContext, Activity.RESULT_OK,
                         audioMode.ordinal(), showTaps, captureTarget,
-                        showStopDot, lowQuality, longerDuration, hevc),
+                        showStopDot, lowQuality, longerDuration, hevc, skipTime),
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         PendingIntent stopIntent = PendingIntent.getService(mUserContext,
                 RecordingService.REQUEST_CODE,
