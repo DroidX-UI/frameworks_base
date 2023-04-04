@@ -53,6 +53,10 @@ import com.android.systemui.tuner.TunerService;
 
 import android.provider.Settings;
 
+import com.android.systemui.plugins.ActivityStarter;
+
+import android.content.Intent;
+
 import java.util.List;
 
 /**
@@ -61,17 +65,12 @@ import java.util.List;
  */
 public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tunable {
 
-    public static final String STATUS_BAR_BATTERY_STYLE =
-            "system:" + Settings.System.STATUS_BAR_BATTERY_STYLE;
-    public static final String QS_BATTERY_STYLE =
-            "system:" + Settings.System.QS_BATTERY_STYLE;
-    public static final String QS_BATTERY_LOCATION =
-            "system:" + Settings.System.QS_BATTERY_LOCATION;
-    private static final String QS_SHOW_BATTERY_PERCENT =
-            "system:" + Settings.System.QS_SHOW_BATTERY_PERCENT;
-    private static final String QS_SHOW_BATTERY_ESTIMATE =
-            "system:" + Settings.System.QS_SHOW_BATTERY_ESTIMATE;
-
+    public static final String STATUS_BAR_BATTERY_STYLE = "system:status_bar_battery_style";
+    public static final String QS_BATTERY_STYLE = "system:qs_battery_style";
+    public static final String QS_BATTERY_LOCATION = "system:qs_battery_location";
+    public static final String QS_SHOW_BATTERY_PERCENT = "system:qs_show_battery_percent";
+    public static final String QS_SHOW_BATTERY_ESTIMATE = "system:qs_show_battery_estimate";
+    
     private boolean mExpanded;
     private boolean mQsDisabled;
 
@@ -127,9 +126,12 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
     private boolean mUseCombinedQSHeader;
 
     private int mStatusBarBatteryStyle, mQSBatteryStyle, mQSBatteryLocation;
+    
+    private final ActivityStarter mActivityStarter;
 
     public QuickStatusBarHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mActivityStarter = Dependency.get(ActivityStarter.class);
     }
 
     /**
