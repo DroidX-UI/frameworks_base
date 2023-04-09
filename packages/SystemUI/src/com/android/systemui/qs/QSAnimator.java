@@ -317,8 +317,12 @@ public class QSAnimator implements QSHost.Callback, PagedTileLayout.PageListener
 
                 View view = mQsRootView;
 
+                int visibleTileCount = isRoundQS() ?
+                        mQuickQSPanelController.getTileLayout().getMaxColumns() :
+                        mQuickQSPanelController.getTileLayout().getNumVisibleTiles();
+
                 // This case: less tiles to animate in small displays.
-                if (count < mQuickQSPanelController.getTileLayout().getNumVisibleTiles()) {
+                if (count < visibleTileCount) {
                     // Quick tiles.
                     QSTileView quickTileView = mQuickQSPanelController.getTileView(tile);
                     if (quickTileView == null) continue;
