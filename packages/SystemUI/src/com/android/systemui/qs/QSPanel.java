@@ -17,6 +17,7 @@
 package com.android.systemui.qs;
 
 import static com.android.systemui.util.Utils.useQsMediaPlayer;
+import static com.android.systemui.util.qs.QSStyleUtils.isRoundQS;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
@@ -34,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
+import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -125,6 +127,13 @@ public class QSPanel extends LinearLayout implements Tunable {
         mMaxColumnsPortrait = getResources().getInteger(R.integer.qs_panel_num_columns);
         mMaxColumnsLandscape = getResources().getInteger(R.integer.qs_panel_num_columns_landscape);
         mMaxColumnsMediaPlayer = getResources().getInteger(R.integer.qs_panel_num_columns_media);
+        if (isRoundQS()) {
+            mMaxColumnsPortrait = Settings.Secure.getInt(context.getContentResolver(),
+                    Settings.Secure.QS_NUM_COLUMNS, mMaxColumnsPortrait);
+            mMaxColumnsLandscape = Settings.Secure.getInt(context.getContentResolver(),
+                    Settings.Secure.QS_NUM_COLUMNS_LANDSCAPE, mMaxColumnsLandscape);
+        }
+
         mContext = context;
 
         setOrientation(VERTICAL);
@@ -748,6 +757,12 @@ public class QSPanel extends LinearLayout implements Tunable {
         default boolean setMaxColumns(int maxColumns) {
             return false;
         }
+
+        /** Gets the max number of columns to show
+         *
+         * @return The maximum number of visible columns.
+         */
+        int getMaxColumns();
 
         /**
          * Sets the expansion value and proposedTranslation to panel.
