@@ -59,4 +59,9 @@
     <string name="accessibility_quick_settings_live_display_changed_night">LiveDisplay changed to night mode.</string>
     <string name="accessibility_quick_settings_live_display_changed_outdoor">LiveDisplay changed to outdoor mode.</string>
 
+    <!-- PowerOffAlarmService -->
+    <string name="notification_channel_poweroff_alarm">Power off alarm</string>
+    <string name="poweroff_alarm_title">Power off alarm set</string>
+    <string name="poweroff_alarm_body">An alarm was detected and the device will power on 2 minutes before it\'s due</string>
+
 </resources>
