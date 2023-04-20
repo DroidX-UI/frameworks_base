@@ -1,10 +1,4 @@
 <resources>
-
-    <!-- Tri-state UI -->
-    <style name="TriStateUiText">
-        <item name="android:textSize">11.0sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
     
     <!-- reTicker -->
     <style name="TextAppearance.Notifications.reTicker" parent="@*android:style/TextAppearance.StatusBar.Icon">
