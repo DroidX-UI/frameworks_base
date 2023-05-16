@@ -12194,6 +12194,12 @@ public final class Settings {
         public static final String HIDE_PRIVATESPACE_ENTRY_POINT = "hide_privatespace_entry_point";
 
         /**
+         * Quicksettings UI Style
+         * @hide
+         */
+        public static final String QS_STYLE_ROUND = "qs_style_round";
+
+        /*
          * These entries are considered common between the personal and the managed profile,
          * since the managed profile doesn't get to change them.
          */
