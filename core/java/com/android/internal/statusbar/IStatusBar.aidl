@@ -339,5 +339,8 @@ oneway interface IStatusBar
      */
     void enterStageSplitFromRunningApp(boolean leftOrTop);
 
+    /**
+     * Toggles flashlight of the device
+     */
     void toggleCameraFlash();
 }

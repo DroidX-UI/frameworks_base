@@ -436,6 +436,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
     public void togglePanel() {
         mCommandQueueCallbacks.togglePanel();
     }
+
     /**
      * The {@link StatusBarState} of the status bar.
      */
