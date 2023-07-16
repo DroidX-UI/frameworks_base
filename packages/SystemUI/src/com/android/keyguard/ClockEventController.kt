@@ -103,6 +103,7 @@ constructor(
                 } else {
                     updateColors()
                 }
+                updateFontSizes()
                 updateTimeListeners()
             }
         }
