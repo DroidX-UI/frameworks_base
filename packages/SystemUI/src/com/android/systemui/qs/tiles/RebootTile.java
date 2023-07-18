@@ -43,11 +43,10 @@ import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.FalsingManager;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.qs.logging.QSLogger;
-import com.android.systemui.statusbar.policy.KeyguardStateController;
 
 import javax.inject.Inject;
 
-public class RebootTile extends SecureQSTile<BooleanState> {
+public class RebootTile extends QSTileImpl<BooleanState> {
 
     public static final String TILE_SPEC = "reboot";
 
@@ -61,11 +60,10 @@ public class RebootTile extends SecureQSTile<BooleanState> {
             MetricsLogger metricsLogger,
             StatusBarStateController statusBarStateController,
             ActivityStarter activityStarter,
-            QSLogger qsLogger,
-            KeyguardStateController keyguardStateController
+            QSLogger qsLogger
     ) {
         super(host, backgroundLooper, mainHandler, falsingManager, metricsLogger,
-                statusBarStateController, activityStarter, qsLogger, keyguardStateController);
+                statusBarStateController, activityStarter, qsLogger);
     }
 
     @Override
@@ -74,10 +72,7 @@ public class RebootTile extends SecureQSTile<BooleanState> {
     }
 
     @Override
-    protected void handleClick(@Nullable View view, boolean keyguardShowing) {
-        if (checkKeyguard(view, keyguardShowing)) {
-            return;
-        }
+    public void handleClick(@Nullable View view) {
         switch (mRebootToRecovery) {
             default:
                 mRebootToRecovery = 0; // Reboot
