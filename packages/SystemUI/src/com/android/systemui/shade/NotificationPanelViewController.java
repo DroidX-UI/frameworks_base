@@ -87,6 +87,7 @@ import android.os.UserManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
+import android.telecom.TelecomManager;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -667,6 +668,10 @@ public final class NotificationPanelViewController implements Dumpable {
     private boolean mIsAnimatingTicker = false;
     private boolean mIsDismissRequested = false;
     private boolean hasNewEvents = false;
+    private StatusBarNotification sbn;
+    private Notification notification;
+    private String pkgname;
+    private TelecomManager telecomManager;
 
     private final Runnable mFlingCollapseRunnable = () -> fling(0, false /* expand */,
             mNextCollapseSpeedUpFactor, false /* expandBecauseOfFalsing */);
@@ -1011,6 +1016,7 @@ public final class NotificationPanelViewController implements Dumpable {
                 });
         mAlternateBouncerInteractor = alternateBouncerInteractor;
         dumpManager.registerDumpable(this);
+        telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
     }
 
     private void unlockAnimationFinished() {
@@ -2597,6 +2603,7 @@ public final class NotificationPanelViewController implements Dumpable {
     private void onExpandingFinished() {
         mNotificationStackScrollLayoutController.onExpansionStopped();
         mHeadsUpManager.onExpandingFinished();
+        reTickerViewVisibility();
         mConversationNotificationManager.onNotificationPanelExpandStateChanged(isFullyCollapsed());
         mIsExpanding = false;
         mMediaHierarchyManager.setCollapsingShadeFromQS(false);
@@ -3837,6 +3844,7 @@ public final class NotificationPanelViewController implements Dumpable {
             mAmbientState.setExpansionFraction(mExpandedFraction);
             onHeightUpdated(mExpandedHeight);
             updatePanelExpansionAndVisibility();
+            reTickerViewVisibility();
         });
     }
 
@@ -5238,15 +5246,14 @@ public final class NotificationPanelViewController implements Dumpable {
         void onOpenStarted();
     }
     
-    /* reTicker */
+    /* reTicker v1.1 */
     public void reTickerView(boolean visibility) {
-        if (!mReTickerStatus || !visibility) {
-            retickerDismiss();
+        if (!mReTickerStatus) {
             return;
         }
 
-        if (mReTickerComeback.getVisibility() == View.VISIBLE) {
-            retickerDismiss();
+        if (visibility && mReTickerComeback.getVisibility() == View.VISIBLE) {
+            retickerDismiss(false);
         }
 
         NotificationEntry topEntry = mHeadsUpManager.getTopEntry();
@@ -5254,29 +5261,21 @@ public final class NotificationPanelViewController implements Dumpable {
             return;
         }
 
-        StatusBarNotification sbn = topEntry.getRow().getEntry().getSbn();
-        Notification notification = sbn.getNotification();
-        String pkgname = sbn.getPackageName();
+        sbn = topEntry.getRow().getEntry().getSbn();
+        notification = sbn.getNotification();
+        pkgname = sbn.getPackageName();
 
-        switch (pkgname) {
-            case "com.google.android.dialer":
-            case "com.android.dialer":
-                return;
-            default:
-                break;
-        }
-
-        if (getExpandedFraction() != 1) {
-            prepareReticker(sbn, notification, pkgname);
+        if (visibility && getExpandedFraction() != 1) {
+            prepareReticker();
         } else {
-            retickerDismiss();
+            retickerDismiss(false);
         }
     }
 
-    private void prepareReticker(StatusBarNotification sbn, Notification notification, String pkgname) {
+    private void prepareReticker() {
         mNotificationStackScroller.setVisibility(View.GONE);
 
-        Drawable icon = getNotificationIcon(pkgname, notification);
+        Drawable icon = getNotificationIcon();
         String content = notification.extras.getString("android.text");
 
         if (TextUtils.isEmpty(content)) {
@@ -5288,29 +5287,54 @@ public final class NotificationPanelViewController implements Dumpable {
         String mergedContentText = reTickerAppName + " " + reTickerContent;
 
         mReTickerComebackIcon.setImageDrawable(icon);
-        mReTickerComeback.setBackground(getRetickerBackgroundDrawable(pkgname, notification.color));
+        mReTickerComeback.setBackground(getRetickerBackgroundDrawable(notification.color));
         mReTickerContentTV.setText(mergedContentText);
         mReTickerContentTV.setTextAppearance(mView.getContext(), R.style.TextAppearance_Notifications_reTicker);
         mReTickerContentTV.setSelected(true);
 
-        PendingIntent reTickerIntent = notification.contentIntent;
-        if (reTickerIntent != null) {
-            mReTickerComeback.setOnClickListener(v -> {
-                final GameSpaceManager gameSpace = mCentralSurfaces.getGameSpaceManager();
-                if (gameSpace == null || !gameSpace.isGameActive()) {
-                    try {
-                        reTickerIntent.send();
-                    } catch (PendingIntent.CanceledException e) {
-                    }
-                    retickerDismiss();
-                    reTickerViewVisibility();
-                }
-            });
-        }
         retickerAnimate();
+
+        setupReTickerListeners();
     }
 
-    private Drawable getNotificationIcon(String pkgname, Notification notification) {
+    private void setupReTickerListeners() {
+        mReTickerComeback.setOnClickListener(v -> {
+            final GameSpaceManager gameSpace = mCentralSurfaces.getGameSpaceManager();
+            if ((gameSpace == null || !gameSpace.isGameActive()) && !telecomManager.isRinging()) {
+                PendingIntent reTickerIntent = notification.contentIntent;
+                try {
+                    if (reTickerIntent != null) {
+                        reTickerIntent.send();
+                    }
+                } catch (PendingIntent.CanceledException e) {}
+                reTickerViewVisibility();
+            } else {
+                if (telecomManager != null && telecomManager.isRinging()) {
+                    telecomManager.acceptRingingCall();
+                    if (mVibratorHelper != null) {
+                        mVibratorHelper.vibrate(VibrationEffect.EFFECT_DOUBLE_CLICK);
+                    }
+                    retickerDismiss(true);
+                }
+            }
+        });
+
+        mReTickerComeback.setOnLongClickListener(v -> {
+            boolean isDialer = "com.google.android.dialer".equals(pkgname) || "com.android.dialer".equals(pkgname);
+            if (!isDialer) return true;
+            if (telecomManager != null && telecomManager.isRinging()) {
+                telecomManager.endCall();
+                if (mVibratorHelper != null) {
+                    mVibratorHelper.vibrate(VibrationEffect.EFFECT_CLICK);
+                }
+                retickerDismiss(true);
+                return true;
+            }
+            return true;
+        });
+    }
+
+    private Drawable getNotificationIcon() {
         Drawable icon = null;
         try {
             if ("com.android.systemui".equals(pkgname)) {
@@ -5325,7 +5349,6 @@ public final class NotificationPanelViewController implements Dumpable {
 
     protected void reTickerViewVisibility() {
         if (!mReTickerStatus) {
-            retickerDismiss();
             return;
         }
 
@@ -5400,14 +5423,18 @@ public final class NotificationPanelViewController implements Dumpable {
                 if (mIsDismissRequested) {
                     hasNewEvents = false;
                     // Dismiss was requested during animation, trigger dismiss animation
-                    retickerDismiss(); 
+                    retickerDismiss(false);
                 }
             }
         });
         animatorSet.start();
     }
 
-    public void retickerDismiss() {
+    public void retickerDismiss(boolean forced) {
+        boolean isDialer = "com.google.android.dialer".equals(pkgname) || "com.android.dialer".equals(pkgname);
+        if (isDialer && !forced) {
+            return;
+        }
         hasNewEvents = false;
         if (mIsAnimatingTicker) {
             mIsDismissRequested = true;
@@ -5439,17 +5466,16 @@ public final class NotificationPanelViewController implements Dumpable {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mReTickerComeback.setVisibility(View.GONE);
                 mNotificationStackScroller.setVisibility(View.VISIBLE);
-                mReTickerVisible = false;
-                mReTickerComeback.getViewTreeObserver().removeOnComputeInternalInsetsListener(mInsetsListener);
+                mReTickerComeback.setVisibility(View.GONE);
             }
         });
 
         animatorSet.start();
+        mReTickerComeback.getViewTreeObserver().removeOnComputeInternalInsetsListener(mInsetsListener);
     }
 
-    private Drawable getRetickerBackgroundDrawable(String pkgname, int notificationColor) {
+    private Drawable getRetickerBackgroundDrawable(int notificationColor) {
         Drawable dw = mView.getContext().getDrawable(R.drawable.reticker_background);
         if (mReTickerColored) {
             int col;
