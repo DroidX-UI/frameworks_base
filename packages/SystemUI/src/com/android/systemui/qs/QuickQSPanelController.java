@@ -91,6 +91,7 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
     protected void onViewAttached() {
         super.onViewAttached();
         mView.updateColumns();
+    }
 
     @Override
     protected void onViewDetached() {

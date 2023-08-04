@@ -45,6 +45,7 @@ public class QuickQSPanel extends QSPanel {
     // Tile Columns when media player is visible
     public int mMaxColumnsMediaPlayer = 4;
 
+    private boolean mDisabledByPolicy;
     private int mMaxTiles;
 
     public QuickQSPanel(Context context, AttributeSet attrs) {
