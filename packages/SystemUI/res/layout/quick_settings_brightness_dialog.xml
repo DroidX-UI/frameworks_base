@@ -19,6 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/brightness_mirror_height"
         android:layout_gravity="center"
+        android:layout_marginStart="11dp"
+        android:layout_marginEnd="11dp"
         android:contentDescription="@string/accessibility_brightness"
         android:importantForAccessibility="no" >
 
