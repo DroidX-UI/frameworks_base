@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-//ERROR101
 package com.android.systemui.statusbar.policy;
 
 import android.annotation.NonNull;
@@ -150,6 +149,7 @@ public class BrightnessMirrorController
                 mBrightnessMirrorBackgroundPadding,
                 mBrightnessMirrorBackgroundPadding
         );
+        updateIcon();
     }
 
     public void onOverlayChanged() {
