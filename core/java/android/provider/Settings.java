@@ -5558,28 +5558,6 @@ public final class Settings {
         public static final String FORCE_FULLSCREEN_CUTOUT_APPS = "force_full_screen_cutout_apps";
 
         /**
-         * Whether or not to vibrate when a touchscreen gesture is detected
-         * @hide
-         */
-        public static final String TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK = "touchscreen_gesture_haptic_feedback";
-
-        /**
-         * Whether the HighTouchSensitivity is activated or not.
-         * 0 = off, 1 = on
-         * @hide
-         */
-        public static final String HIGH_TOUCH_SENSITIVITY_ENABLE =
-                "high_touch_sensitivity_enable";
-
-        /**
-         * Whether the HighTouchPollingRate is activated or not.
-         * 0 = off, 1 = on
-         * @hide
-         */
-        public static final String HIGH_TOUCH_POLLING_RATE_ENABLE =
-                "high_touch_polling_rate_enable";
-
-        /**
          * Volume keys control cursor in text fields (default is 0)
          * 0 - Disabled
          * 1 - Volume up/down moves cursor left/right
