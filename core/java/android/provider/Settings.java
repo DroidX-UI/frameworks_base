@@ -5552,12 +5552,6 @@ public final class Settings {
          */
         public static final String SWIPE_TO_SCREENSHOT = "swipe_to_screenshot";
 
-        /**
-         * Whether to enable fingerprint wake-and-unlock.
-         * @hide
-         */
-        public static final String FINGERPRINT_WAKE_UNLOCK = "fingerprint_wake_unlock";
-
 
         /** Volume rocker wake
          * @hide
