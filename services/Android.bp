@@ -146,6 +146,7 @@ filegroup {
         ":services.wallpapereffectsgeneration-sources",
         ":services.wifi-sources",
         ":framework-pm-common-shared-srcs",
+        ":services.droidx-sources",
     ],
     visibility: ["//visibility:private"],
 }
@@ -249,6 +250,7 @@ system_java_library {
         "services.wifi",
         "service-blobstore",
         "service-jobscheduler",
+        "services.droidx",
         "android.hidl.base-V1.0-java",
     ],
 

@@ -313,6 +313,8 @@ import java.util.concurrent.Future;
 
 // LineageHardware
 import com.android.server.custom.LineageHardwareService;
+// DroidX-UI framework
+import org.droidx.server.DroidXSystemServer;
 
 /**
  * Entry point to {@code system_server}.
@@ -2878,6 +2880,10 @@ public final class SystemServer implements Dumpable {
         // Perfetto TracingServiceProxy
         t.traceBegin("startTracingServiceProxy");
         mSystemServiceManager.startService(TracingServiceProxy.class);
+        t.traceEnd();
+
+        t.traceBegin("startDroidXServices");
+        DroidXSystemServer.startServices(context, mSystemServiceManager);
         t.traceEnd();
 
         // It is now time to start up the app processes...

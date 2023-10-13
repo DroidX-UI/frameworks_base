@@ -141,6 +141,7 @@ android_app {
 
     resource_zips: [
         ":remote-color-resources-arsc-zip",
+        ":framework-droidx-res",
     ],
 
     // Create package-export.apk, which other packages can use to get
