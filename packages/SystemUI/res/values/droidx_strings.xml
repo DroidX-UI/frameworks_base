@@ -31,4 +31,7 @@
 
     <!-- Label for area where tiles can be added to the qs panel -->
     <string name="drag_or_tap_to_add_tiles">Hold &amp; drag or tap to add tiles</string>
+
+    <!-- Label for the area where tiles can be dragged in to remove -->
+    <string name="drag_to_tap_to_remove_tiles">Tap an active tile or drag here to remove</string>
 </resources>
