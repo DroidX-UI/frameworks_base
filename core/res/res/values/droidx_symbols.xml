@@ -170,12 +170,6 @@
     <java-symbol type="string" name="poweroff_alarm_body" />
     <java-symbol type="drawable" name="ic_alarm_on" />
 
-    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
-    <java-symbol type="string" name="config_oemFastChargerStatusPath" />
-
-    <!-- Expected value from fast charging status file -->
-    <java-symbol type="string" name="config_oemFastChargerStatusValue" />
-
     <!-- Pocket Lock -->
     <java-symbol type="layout" name="pocket_lock_view" />
     <java-symbol type="bool" name="config_pocketModeSupported" />
