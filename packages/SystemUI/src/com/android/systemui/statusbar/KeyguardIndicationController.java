@@ -61,9 +61,12 @@ import android.hardware.face.FaceManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.BatteryManager;
 import android.os.Handler;
+import android.os.IBatteryPropertiesRegistrar;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.text.TextUtils;
@@ -199,6 +202,8 @@ public class KeyguardIndicationController {
     private final FaceHelpMessageDeferral mFaceAcquiredMessageDeferral;
     private boolean mInited;
     private boolean mFaceDetectionRunning;
+
+    private IBatteryPropertiesRegistrar mBatteryPropertiesRegistrar;
 
     private KeyguardUpdateMonitorCallback mUpdateMonitorCallback;
 
@@ -339,6 +344,10 @@ public class KeyguardIndicationController {
         mKeyguardStateController.addCallback(mKeyguardStateCallback);
 
         mStatusBarStateListener.onDozingChanged(mStatusBarStateController.isDozing());
+
+        mBatteryPropertiesRegistrar =
+                    IBatteryPropertiesRegistrar.Stub.asInterface(
+                    ServiceManager.getService("batteryproperties"));
     }
 
     public void setIndicationArea(ViewGroup indicationArea) {
@@ -959,13 +968,45 @@ public class KeyguardIndicationController {
             return mContext.getResources().getString(R.string.keyguard_charged);
         }
 
+        final boolean hasSuperDartCharger = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_hasSuperDartCharger);
+
         final boolean hasChargingTime = mChargingTimeRemaining > 0;
         if (mPowerPluggedInWired) {
             switch (mChargingSpeed) {
+                case BatteryStatus.CHARGING_DASH:
+                    chargingId = hasChargingTime
+                            ? R.string.keyguard_indication_dash_charging_time
+                            : R.string.keyguard_plugged_in_dash_charging;
+                    break;
                 case BatteryStatus.CHARGING_FAST:
                     chargingId = hasChargingTime
                             ? R.string.keyguard_indication_charging_time_fast
                             : R.string.keyguard_plugged_in_charging_fast;
+                    break;
+                case BatteryStatus.CHARGING_WARP:
+                    chargingId = hasChargingTime
+                            ? R.string.keyguard_indication_warp_charging_time
+                            : R.string.keyguard_plugged_in_warp_charging;
+                    break;
+                case BatteryStatus.CHARGING_VOOC:
+                    chargingId = hasChargingTime
+                            ? (hasSuperDartCharger
+                                    ? R.string.keyguard_indication_superdart_charging_time
+                                    : R.string.keyguard_indication_vooc_charging_time)
+                            : (hasSuperDartCharger
+                                    ? R.string.keyguard_plugged_in_superdart_charging
+                                    : R.string.keyguard_plugged_in_vooc_charging);
+                    break;
+                case BatteryStatus.CHARGING_TURBO_POWER:
+                    chargingId = hasChargingTime
+                            ? R.string.keyguard_indication_turbo_power_time
+                            : R.string.keyguard_plugged_in_turbo_charging;
+                    break;
+                case BatteryStatus.CHARGING_OEM_FAST_CHARGER:
+                    chargingId = hasChargingTime
+                            ? R.string.keyguard_indication_oem_power_time
+                            : R.string.keyguard_plugged_in_oem_charging;
                     break;
                 case BatteryStatus.CHARGING_SLOWLY:
                     chargingId = hasChargingTime
@@ -1091,6 +1132,20 @@ public class KeyguardIndicationController {
         mRotateTextViewController.dump(pw, args);
     }
 
+    private final Runnable mUpdateInfo = new Runnable() {
+        public void run() {
+            long now = SystemClock.uptimeMillis();
+            long next = now + (1000 - now % 1000);
+            try {
+                mBatteryPropertiesRegistrar.scheduleUpdate();
+            } catch (RemoteException e) {
+            }
+            if (mHandler != null) {
+                mHandler.postAtTime(mUpdateInfo, next);
+            }
+        }
+    };
+
     protected class BaseKeyguardCallback extends KeyguardUpdateMonitorCallback {
         @Override
         public void onTimeChanged() {
@@ -1129,6 +1184,13 @@ public class KeyguardIndicationController {
             } catch (RemoteException e) {
                 mKeyguardLogger.log(TAG, ERROR, "Error calling IBatteryStats", e);
                 mChargingTimeRemaining = -1;
+            }
+            if (wasPluggedIn != mPowerPluggedIn) {
+                if (mPowerPluggedIn) {
+                    mUpdateInfo.run();
+                } else {
+                    mHandler.removeCallbacks(mUpdateInfo);
+                }
             }
 
             mKeyguardLogger.logRefreshBatteryInfo(isChargingOrFull, mPowerPluggedIn, mBatteryLevel,

@@ -170,12 +170,6 @@
     <java-symbol type="string" name="poweroff_alarm_body" />
     <java-symbol type="drawable" name="ic_alarm_on" />
 
-    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
-    <java-symbol type="string" name="config_oemFastChargerStatusPath" />
-
-    <!-- Expected value from fast charging status file -->
-    <java-symbol type="string" name="config_oemFastChargerStatusValue" />
-
     <!-- Pocket Lock -->
     <java-symbol type="layout" name="pocket_lock_view" />
     <java-symbol type="bool" name="config_pocketModeSupported" />
@@ -190,5 +184,24 @@
 
     <!-- Whether devices suports in-display fingerprint when screen is off -->
     <java-symbol type="bool" name="config_supportScreenOffUdfps" />
+
+    <!-- Whether device has dash charging support -->
+    <java-symbol type="bool" name="config_hasDashCharger" />
+
+    <!-- Whether device has warp charging support -->
+    <java-symbol type="bool" name="config_hasWarpCharger" />
+
+    <!-- Whether device has VOOC charging support -->
+    <java-symbol type="bool" name="config_hasVoocCharger" />
+
+    <!-- Whether device has turbo power charging support -->
+    <java-symbol type="bool" name="config_hasTurboPowerCharger" />
+
+    <!-- Whether device has SuperDart charging support -->
+    <java-symbol type="bool" name="config_hasSuperDartCharger" />
+    
+
+    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
+    <java-symbol type="array" name="config_oemFastChargerStatusPaths" />
     
 </resources>
