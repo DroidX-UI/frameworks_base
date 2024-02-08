@@ -91,6 +91,7 @@ public class PixelPropsUtils {
                 "com.google.pixel.livewallpaper",
                 "com.google.android.apps.wallpaper.pixel",
                 "com.google.android.apps.wallpaper",
+                "com.google.android.apps.bard",
                 "com.google.android.apps.customization.pixel",
                 "com.google.android.apps.privacy.wildlife",
                 "com.google.android.apps.subscriptions.red",
