@@ -260,7 +260,7 @@ public class PixelPropsUtils {
         setPropValue("TAGS", sCertifiedProps[10].isEmpty() ? "release-keys" : sCertifiedProps[10]);
     }
 
-    public static void setProps(Application app) {
+    public static void setProps(Context context) {
         if (!sEnablePixelProps) {
             dlog("Pixel props is disabled by config");
             return;
@@ -268,8 +268,8 @@ public class PixelPropsUtils {
 
         propsToChangeGeneric.forEach((k, v) -> setPropValue(k, v));
 
-        final String packageName = app.getPackageName();
-        final String processName = app.getProcessName();
+        final String packageName = context.getPackageName();
+        final String processName = Application.getProcessName();
 
         if (packageName == null || packageName.isEmpty()) {
             return;
