@@ -152,7 +152,7 @@ final class ResilientAtomicFile implements Closeable {
                     FileIntegrity.setUpFsVerity(mainPfd);
                     FileIntegrity.setUpFsVerity(copyPfd);
                 } catch (IOException e) {
-                    Slog.e(LOG_TAG, "Failed to verity-protect " + mDebugName, e);
+                    //Slog.e(LOG_TAG, "Failed to verity-protect " + mDebugName, e);
                 }
             }
         } catch (IOException e) {
