@@ -877,8 +877,8 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         mNotificationsTint = mState.getNotifTint();
 
         mInFrontAlpha = mState.getFrontAlpha();
-        mBehindAlpha = 1;
-        mNotificationsAlpha = behindFraction * mDefaultScrimAlpha;
+        mBehindAlpha = mState.getBehindAlpha();
+        mNotificationsAlpha = mState.getNotifAlpha();
 
         assertAlphasValid();
 
@@ -901,8 +901,8 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
                 } else if (mClipsQsScrim) {
                     float behindFraction = getInterpolatedFraction();
                     behindFraction = (float) Math.pow(behindFraction, 0.8f);
-                    mBehindAlpha = QS_CLIP_SCRIM_ALPHA;
-                    mNotificationsAlpha = behindFraction * QS_CLIP_SCRIM_ALPHA;
+                    mBehindAlpha = 1;
+                    mNotificationsAlpha = behindFraction * mDefaultScrimAlpha;
                 } else {
                     mBehindAlpha = mLargeScreenShadeInterpolator.getBehindScrimAlpha(
                             mPanelExpansionFraction * mDefaultScrimAlpha);
