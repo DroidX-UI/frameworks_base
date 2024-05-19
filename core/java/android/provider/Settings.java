@@ -6083,12 +6083,6 @@ public final class Settings {
         public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
 
         /**
-         * Whether to show the ripple animation on fingerprint unlock
-         * @hide
-         */
-        public static final String AUTH_RIPPLE_ENABLED = "auth_ripple_enabled";
-
-        /**
          * Swipe to screenshot
          * @hide
          */
