@@ -7020,6 +7020,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     lp.setFitInsetsTypes(0 /* types */);
                     mBootMsgDialog.getWindow().setAttributes(lp);
                     mBootMsgDialog.setCancelable(false);
+                    android.graphics.Typeface.loadPreinstalledSystemFontMap();
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(msg);
