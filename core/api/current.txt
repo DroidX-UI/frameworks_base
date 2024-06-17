@@ -5605,7 +5605,6 @@ package android.app {
     method @Deprecated public void onCancel(android.content.DialogInterface);
     method @Deprecated public android.app.Dialog onCreateDialog(android.os.Bundle);
     method @Deprecated public void onDismiss(android.content.DialogInterface);
-    method public android.view.LayoutInflater onGetLayoutInflater(android.os.Bundle);
     method @Deprecated public void setCancelable(boolean);
     method @Deprecated public void setShowsDialog(boolean);
     method @Deprecated public void setStyle(int, int);
@@ -9801,6 +9800,7 @@ package android.companion {
     method @NonNull public java.util.List<android.companion.AssociationInfo> getMyAssociations();
     method @Deprecated public boolean hasNotificationAccess(android.content.ComponentName);
     method @FlaggedApi("android.companion.perm_sync_user_consent") public boolean isPermissionTransferUserConsented(int);
+    method @FlaggedApi("android.companion.unpair_associated_device") @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT) public boolean removeBond(int);
     method public void requestNotificationAccess(android.content.ComponentName);
     method @FlaggedApi("android.companion.association_tag") public void setAssociationTag(int, @NonNull String);
     method @RequiresPermission(android.Manifest.permission.REQUEST_OBSERVE_COMPANION_DEVICE_PRESENCE) public void startObservingDevicePresence(@NonNull String) throws android.companion.DeviceNotAssociatedException;
@@ -15974,6 +15974,7 @@ package android.graphics {
     enum_constant public static final android.graphics.ColorSpace.Named LINEAR_EXTENDED_SRGB;
     enum_constant public static final android.graphics.ColorSpace.Named LINEAR_SRGB;
     enum_constant public static final android.graphics.ColorSpace.Named NTSC_1953;
+    enum_constant @FlaggedApi("com.android.graphics.flags.ok_lab_colorspace") public static final android.graphics.ColorSpace.Named OK_LAB;
     enum_constant public static final android.graphics.ColorSpace.Named PRO_PHOTO_RGB;
     enum_constant public static final android.graphics.ColorSpace.Named SMPTE_C;
     enum_constant public static final android.graphics.ColorSpace.Named SRGB;
@@ -19910,7 +19911,6 @@ package android.hardware.camera2 {
   }
 
   @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") public final class ExtensionCaptureRequest {
-    ctor public ExtensionCaptureRequest();
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureRequest.Key<java.lang.Boolean> EFV_AUTO_ZOOM;
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureRequest.Key<java.lang.Float> EFV_MAX_PADDING_ZOOM_FACTOR;
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureRequest.Key<java.lang.Float> EFV_PADDING_ZOOM_FACTOR;
@@ -19923,7 +19923,6 @@ package android.hardware.camera2 {
   }
 
   @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") public final class ExtensionCaptureResult {
-    ctor public ExtensionCaptureResult();
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureResult.Key<java.lang.Boolean> EFV_AUTO_ZOOM;
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureResult.Key<int[]> EFV_AUTO_ZOOM_PADDING_REGION;
     field @FlaggedApi("com.android.internal.camera.flags.concert_mode_api") @NonNull public static final android.hardware.camera2.CaptureResult.Key<java.lang.Float> EFV_MAX_PADDING_ZOOM_FACTOR;
@@ -34055,6 +34054,7 @@ package android.os {
     field public static final String DISALLOW_BLUETOOTH_SHARING = "no_bluetooth_sharing";
     field public static final String DISALLOW_CAMERA_TOGGLE = "disallow_camera_toggle";
     field public static final String DISALLOW_CELLULAR_2G = "no_cellular_2g";
+    field @FlaggedApi("android.nfc.enable_nfc_user_restriction") public static final String DISALLOW_CHANGE_NEAR_FIELD_COMMUNICATION_RADIO = "no_change_near_field_communication_radio";
     field public static final String DISALLOW_CHANGE_WIFI_STATE = "no_change_wifi_state";
     field public static final String DISALLOW_CONFIG_BLUETOOTH = "no_config_bluetooth";
     field public static final String DISALLOW_CONFIG_BRIGHTNESS = "no_config_brightness";
@@ -47133,6 +47133,8 @@ package android.telephony.ims {
     method public int describeContents();
     method public int getAttributeFlags();
     method @NonNull public java.util.Set<java.lang.String> getFeatureTags();
+    method @FlaggedApi("com.android.internal.telephony.flags.emergency_registration_state") public boolean getFlagRegistrationTypeEmergency();
+    method @FlaggedApi("com.android.internal.telephony.flags.emergency_registration_state") public boolean getFlagVirtualRegistrationForEmergencyCall();
     method @Nullable public android.telephony.ims.SipDetails getSipDetails();
     method public int getTransportType();
     method public void writeToParcel(@NonNull android.os.Parcel, int);
@@ -55307,7 +55309,7 @@ package android.view.accessibility {
     field public static final int TYPE_MAGNIFICATION_OVERLAY = 6; // 0x6
     field public static final int TYPE_SPLIT_SCREEN_DIVIDER = 5; // 0x5
     field public static final int TYPE_SYSTEM = 3; // 0x3
-    field @FlaggedApi("android.view.accessibility.add_type_window_control") public static final int TYPE_WINDOW_CONTROL = 7; // 0x7
+    field @FlaggedApi("android.view.accessibility.enable_type_window_control") public static final int TYPE_WINDOW_CONTROL = 7; // 0x7
   }
 
   public class CaptioningManager {
