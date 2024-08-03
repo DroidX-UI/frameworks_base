@@ -213,7 +213,6 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver ,Tune
     private int mShowPercentMode = MODE_DEFAULT;
     private String mEstimateText = null;
     private boolean mPluggedIn;
-    private boolean mPresent;
     private boolean mPowerSaveEnabled;
     private boolean mIsBatteryDefender;
     private boolean mIsIncompatibleCharging;
@@ -1067,10 +1066,6 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver ,Tune
         mBatteryEstimateFetcher = fetcher;
     }
 
-    void setBatteryPresence(boolean isPresent) {
-        mPresent = isPresent;
-    }
-
     void setDisplayShieldEnabled(boolean displayShieldEnabled) {
         mDisplayShieldEnabled = displayShieldEnabled;
     }
@@ -1366,7 +1361,7 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver ,Tune
         mBatteryStateUnknown = isUnknown;
         updateContentDescription();
 
-        if (mBatteryStateUnknown && mPresent) {
+        if (mBatteryStateUnknown) {
             mBatteryIconView.setImageDrawable(getUnknownStateDrawable());
         } else {
             updateDrawable();
@@ -1605,10 +1600,6 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver ,Tune
     }
 
     private void updateDrawable() {
-        if (!mPresent) {
-            return;
-        }
-        
         switch (mBatteryStyle) {
             case BATTERY_STYLE_PORTRAIT:
                 mBatteryIconView.setImageDrawable(mAccessorizedDrawable);
@@ -1804,7 +1795,6 @@ public class BatteryMeterView extends LinearLayout implements DarkReceiver ,Tune
         pw.println("    mBatteryStateUnknown: " + mBatteryStateUnknown);
         pw.println("    mIsIncompatibleCharging: " + mIsIncompatibleCharging);
         pw.println("    mPluggedIn: " + mPluggedIn);
-        pw.println("    mPresent: " + mPresent);
         pw.println("    mLevel: " + mLevel);
         pw.println("    mMode: " + mShowPercentMode);
     }
