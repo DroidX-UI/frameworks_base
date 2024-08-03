@@ -170,9 +170,6 @@ public interface BatteryController extends DemoMode,
         default void onIsIncompatibleChargingChanged(boolean isIncompatibleCharging) {
         }
 
-        default void onBatteryPresentChanged(boolean batteryPresent) {
-        }
-
         @Override
         default void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
             pw.println(this);
