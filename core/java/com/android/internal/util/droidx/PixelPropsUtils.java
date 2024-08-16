@@ -96,7 +96,7 @@ public class PixelPropsUtils {
                 "com.google.android.apps.privacy.wildlife",
                 "com.google.android.apps.subscriptions.red",
                 "com.google.android.apps.photos",
-		"com.google.android.googlequicksearchbox",
+                "com.google.android.googlequicksearchbox",
                 "com.google.android.gms.ui",
                 "com.google.android.gms.learning",
                 "com.google.android.gms.persistent"
@@ -105,8 +105,8 @@ public class PixelPropsUtils {
    private static final ArrayList<String> packagesToChangePixel5a = 
         new ArrayList<String> (
             Arrays.asList(
-		"com.google.android.tts",
-		"com.breel.wallpapers20"
+                "com.google.android.tts",
+                "com.breel.wallpapers20"
        ));
 
     private static final ArrayList<String> extraPackagesToChange = 
@@ -149,11 +149,11 @@ public class PixelPropsUtils {
                 "com.google.oslo",
                 "it.ingdirect.app",
                 "com.google.android.apps.nexuslauncher",
-		"com.google.intelligence.sense",
-		"com.google.android.apps.tips",
-		"com.google.android.apps.dreamliner",
-		"com.google.android.apps.dreamlinerupdater",
-		"com.google.android.gms.update"
+                "com.google.intelligence.sense",
+                "com.google.android.apps.tips",
+                "com.google.android.apps.dreamliner",
+                "com.google.android.apps.dreamlinerupdater",
+                "com.google.android.gms.update"
         ));
 
     private static final ComponentName GMS_ADD_ACCOUNT_ACTIVITY = ComponentName.unflattenFromString(
@@ -203,7 +203,7 @@ public class PixelPropsUtils {
 
         final String processName = Application.getProcessName();
         if (!processName.toLowerCase().contains("unstable")
-		&& !processName.toLowerCase().contains("chimera")
+                && !processName.toLowerCase().contains("chimera")
                 && !processName.toLowerCase().contains("pixelmigrate")
                 && !processName.toLowerCase().contains("instrumentation")) {
             return false;
@@ -245,17 +245,17 @@ public class PixelPropsUtils {
 
     private static void spoofBuildGms() { 
             String[] sCertifiedProps = { 
-	    SystemProperties.get("persist.sys.pihooks.product_name", ""), 
-	    SystemProperties.get("persist.sys.pihooks.product_device", ""), 
+            SystemProperties.get("persist.sys.pihooks.product_name", ""), 
+            SystemProperties.get("persist.sys.pihooks.product_device", ""), 
             SystemProperties.get("persist.sys.pihooks.manufacturer", ""), 
-	    SystemProperties.get("persist.sys.pihooks.brand", ""), 
-     	    SystemProperties.get("persist.sys.pihooks.product_model", ""), 
+            SystemProperties.get("persist.sys.pihooks.brand", ""), 
+            SystemProperties.get("persist.sys.pihooks.product_model", ""), 
             SystemProperties.get("persist.sys.pihooks.build_fingerprint", ""), 
             SystemProperties.get("persist.sys.pihooks.security_patch", ""), 
             SystemProperties.get("persist.sys.pihooks.first_api_level", ""), 
             SystemProperties.get("persist.sys.pihooks.build_id", ""), 
-	    SystemProperties.get("persist.sys.pihooks.build_type", ""), 
-	    SystemProperties.get("persist.sys.pihooks.build_tags", "")
+            SystemProperties.get("persist.sys.pihooks.build_type", ""), 
+            SystemProperties.get("persist.sys.pihooks.build_tags", "")
         };
 
         if (sCertifiedProps == null || sCertifiedProps.length == 0) return;
@@ -366,6 +366,11 @@ public class PixelPropsUtils {
             setPropValue("FINGERPRINT", Build.VERSION.INCREMENTAL);
             return;
         }
+
+        // Check if pihooks is enabled and change device info if true
+        if (isPiHooksEnabled()) {
+            spoofBuildGms();
+        }
     }
 
     private static void setPropValue(String key, Object value) {
@@ -435,7 +440,7 @@ public class PixelPropsUtils {
 
     public static void onEngineGetCertificateChain() {
         // Check stack for SafetyNet or Play Integrity
-	if ((isCallerSafetyNet() || sIsFinsky) && !sIsSetupWizard && shouldTryToCertifyDevice()) {
+        if ((isCallerSafetyNet() || sIsFinsky) && !sIsSetupWizard && shouldTryToCertifyDevice()) {
             dlog("Blocked key attestation sIsGms=" + sIsGms + " sIsFinsky=" + sIsFinsky);
             throw new UnsupportedOperationException();
         }
@@ -443,5 +448,9 @@ public class PixelPropsUtils {
 
     public static void dlog(String msg) {
         if (DEBUG) Log.d(TAG, msg);
+    }
+
+    private static boolean isPiHooksEnabled() {
+        return SystemProperties.getBoolean("persist.sys.pihooks.enable", false);
     }
 }

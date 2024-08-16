@@ -29,7 +29,7 @@ import java.util.Map;
 public class GamesPropsUtils {
 
     private static final String TAG = GamesPropsUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final Map<String, Map<String, Object>> propsToChange = new HashMap<>();
     private static final Map<String, String[]> packagesToChange = new HashMap<>();
