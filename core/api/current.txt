@@ -34266,9 +34266,14 @@ package android.os {
     method public final int areAllEffectsSupported(@NonNull int...);
     method public final boolean areAllPrimitivesSupported(@NonNull int...);
     method @NonNull public int[] areEffectsSupported(@NonNull int...);
+    method @FlaggedApi("android.os.vibrator.normalized_pwle_effects") public boolean areEnvelopeEffectsSupported();
     method @NonNull public boolean[] arePrimitivesSupported(@NonNull int...);
     method @RequiresPermission(android.Manifest.permission.VIBRATE) public abstract void cancel();
     method public int getId();
+    method @FlaggedApi("android.os.vibrator.normalized_pwle_effects") public int getMaxEnvelopeEffectControlPointDurationMillis();
+    method @FlaggedApi("android.os.vibrator.normalized_pwle_effects") public int getMaxEnvelopeEffectDurationMillis();
+    method @FlaggedApi("android.os.vibrator.normalized_pwle_effects") public int getMaxEnvelopeEffectSize();
+    method @FlaggedApi("android.os.vibrator.normalized_pwle_effects") public int getMinEnvelopeEffectControlPointDurationMillis();
     method @NonNull public int[] getPrimitiveDurations(@NonNull int...);
     method public float getQFactor();
     method public float getResonantFrequency();
@@ -36923,6 +36928,19 @@ package android.provider {
 
   public static final class ContactsContract.RawContacts.Data implements android.provider.BaseColumns android.provider.ContactsContract.DataColumns {
     field public static final String CONTENT_DIRECTORY = "data";
+  }
+
+  @FlaggedApi("android.provider.new_default_account_api_enabled") public static final class ContactsContract.RawContacts.DefaultAccountAndState {
+    ctor public ContactsContract.RawContacts.DefaultAccountAndState(int, @Nullable android.accounts.Account);
+    method @Nullable public android.accounts.Account getCloudAccount();
+    method public int getState();
+    method @NonNull public static android.provider.ContactsContract.RawContacts.DefaultAccountAndState ofCloud(@NonNull android.accounts.Account);
+    method @NonNull public static android.provider.ContactsContract.RawContacts.DefaultAccountAndState ofLocal();
+    method @NonNull public static android.provider.ContactsContract.RawContacts.DefaultAccountAndState ofNotSet();
+    field public static final int DEFAULT_ACCOUNT_STATE_CLOUD = 3; // 0x3
+    field public static final int DEFAULT_ACCOUNT_STATE_INVALID = 0; // 0x0
+    field public static final int DEFAULT_ACCOUNT_STATE_LOCAL = 2; // 0x2
+    field public static final int DEFAULT_ACCOUNT_STATE_NOT_SET = 1; // 0x1
   }
 
   public static final class ContactsContract.RawContacts.DisplayPhoto {
@@ -44067,6 +44085,7 @@ package android.telephony {
   }
 
   public static final class CarrierConfigManager.Gps {
+    field @FlaggedApi("android.location.flags.enable_ni_supl_message_injection_by_carrier_config") public static final String KEY_ENABLE_NI_SUPL_MESSAGE_INJECTION_BOOL = "gps.enable_ni_supl_message_injection_bool";
     field public static final String KEY_PERSIST_LPP_MODE_BOOL = "gps.persist_lpp_mode_bool";
     field public static final String KEY_PREFIX = "gps.";
   }
