@@ -31,7 +31,7 @@ import com.android.internal.app.AlertActivity;
 import com.android.internal.app.AlertController;
 import com.android.systemui.res.R;
 
-abstract class UsbDialogActivity extends AlertActivity
+public abstract class UsbDialogActivity extends AlertActivity
         implements DialogInterface.OnClickListener, CheckBox.OnCheckedChangeListener {
 
     private static final String TAG = UsbDialogActivity.class.getSimpleName();

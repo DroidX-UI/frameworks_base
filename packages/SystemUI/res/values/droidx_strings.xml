@@ -19,4 +19,13 @@
     <!-- App kill -->
     <string name="task_helper_app_killed">%1$s force stopped</string>
     <string name="empty_app_killed">App</string>
+
+    <!-- USB function dialog - copied from Settings -->
+    <string name="usb_use_charging_only">No data transfer</string>
+    <string name="usb_use_file_transfers">File Transfer</string>
+    <string name="usb_use_photo_transfers">PTP</string>
+    <string name="usb_use_uvc_webcam">Webcam</string>
+    <string name="usb_use_tethering">USB tethering</string>
+    <string name="usb_use_MIDI">MIDI</string>
+    <string name="usb_use">Use USB for</string>
 </resources>
