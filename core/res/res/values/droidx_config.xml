@@ -150,8 +150,8 @@
          <item>MANUFACTURER:Google</item>
          <item>BRAND:google</item>
          <item>MODEL:Pixel 9 Pro XL</item>
-         <item>FINGERPRINT:google/tokay_beta/tokay:15/AP41.240925.009/12534705:user/release-keys</item>
-         <item>VERSION.SECURITY_PATCH:2024-10-05</item>
+         <item>FINGERPRINT:google/tokay_beta/tokay:15/BP11.241025.006/12620009:user/release-keys</item>
+         <item>VERSION.SECURITY_PATCH:2024-11-05</item>
      </string-array>
 
      <!-- Build fingerprint from stock ROM -->
