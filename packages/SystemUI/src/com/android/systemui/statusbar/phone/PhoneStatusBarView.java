@@ -290,7 +290,7 @@ public class PhoneStatusBarView extends FrameLayout implements Callbacks {
     }
 
     @Override
-    public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
+    public void setImeWindowStatus(int displayId, int vis, int backDisposition,
             boolean showImeSwitcher) {
         if (mRotationButtonController != null) {
             final boolean imeShown = (vis & InputMethodService.IME_VISIBLE) != 0;
