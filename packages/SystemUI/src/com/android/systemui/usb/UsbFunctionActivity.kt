@@ -46,11 +46,11 @@ import javax.inject.Inject
 
 class UsbFunctionActivity @Inject constructor(
     private val broadcastDispatcher: BroadcastDispatcher,
-): AlertActivity(), DialogInterface.OnClickListener {
+) : AlertActivity(), DialogInterface.OnClickListener {
 
-    private lateinit var usbManager: UsbManager
-    private lateinit var userManager: UserManager
-    private lateinit var tetheringManager: TetheringManager
+    private var usbManager: UsbManager? = null
+    private var userManager: UserManager? = null
+    private var tetheringManager: TetheringManager? = null
 
     private var tetheringSupported = false
     private var midiSupported = false
@@ -63,28 +63,26 @@ class UsbFunctionActivity @Inject constructor(
     private val tetheringCallback = object : TetheringManager.StartTetheringCallback {
         override fun onTetheringFailed(error: Int) {
             Log.w(TAG, "onTetheringFailed() error : $error")
-            usbManager.setCurrentFunctions(previousFunctions)
+            usbManager?.setCurrentFunctions(previousFunctions)
         }
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != UsbManager.ACTION_USB_STATE) {
-                return
-            }
+            if (intent.action != UsbManager.ACTION_USB_STATE) return
 
             val connected = intent.getBooleanExtra(UsbManager.USB_CONNECTED, false)
             if (!connected) {
-                dlog("usb disconnected, goodbye")
+                dlog("USB disconnected, goodbye")
                 finish()
             }
         }
     }
 
-    private lateinit var adapter: UsbFunctionAdapter
+    private var adapter: UsbFunctionAdapter? = null
     private lateinit var supportedFunctions: List<UsbFunction>
 
-    override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         dlog("onCreate()")
         super.onCreate(savedInstanceState)
 
@@ -94,8 +92,8 @@ class UsbFunctionActivity @Inject constructor(
         userManager = getSystemService(UserManager::class.java)
         tetheringManager = getSystemService(TetheringManager::class.java)
 
-        tetheringSupported = tetheringManager.isTetheringSupported()
-        midiSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)
+        tetheringSupported = tetheringManager?.isTetheringSupported() ?: false
+        midiSupported = packageManager?.hasSystemFeature(PackageManager.FEATURE_MIDI) ?: false
 
         supportedFunctions = getSupportedFunctions()
         adapter = UsbFunctionAdapter(this, supportedFunctions)
@@ -132,21 +130,19 @@ class UsbFunctionActivity @Inject constructor(
         when (which) {
             AlertDialog.BUTTON_POSITIVE -> finish()
             AlertDialog.BUTTON_NEUTRAL -> {
-                val intent = Intent()
-                    .setClassName(
-                        "com.android.settings",
-                        "com.android.settings.Settings\$UsbDetailsActivity"
-                    )
+                val intent = Intent().setClassName(
+                    "com.android.settings",
+                    "com.android.settings.Settings\$UsbDetailsActivity"
+                )
                 runCatching {
                     startActivityAsUser(intent, UserHandle.CURRENT)
                     finish()
                 }.onFailure { e ->
-                    Log.e(TAG, "unable to start activity $intent" , e);
+                    Log.e(TAG, "Unable to start activity $intent", e)
                 }
             }
             else -> {
-                setCurrentFunction(adapter.getItem(which))
-                // adapter.notifyDataSetChanged()
+                adapter?.getItem(which)?.let { setCurrentFunction(it) }
                 finish()
             }
         }
@@ -156,19 +152,17 @@ class UsbFunctionActivity @Inject constructor(
         .filter { function -> areFunctionsSupported(function.mask) }
 
     private fun getCurrentFunction(): UsbFunction {
-        var currentFunctions = usbManager.getCurrentFunctions().also {
-            Log.d(TAG, "current usb functions: $it (${UsbManager.usbFunctionsToString(it)})")
+        val currentFunctions = usbManager?.getCurrentFunctions()?.also {
+            Log.d(TAG, "Current USB functions: $it (${UsbManager.usbFunctionsToString(it)})")
+        } ?: UsbManager.FUNCTION_NONE
+
+        val adjustedFunctions = when {
+            (currentFunctions and UsbManager.FUNCTION_ACCESSORY) != 0L -> UsbManager.FUNCTION_MTP
+            currentFunctions == UsbManager.FUNCTION_NCM -> UsbManager.FUNCTION_RNDIS
+            else -> currentFunctions
         }
 
-        if ((currentFunctions and UsbManager.FUNCTION_ACCESSORY) != 0L) {
-            currentFunctions = UsbManager.FUNCTION_MTP
-        } else if (currentFunctions == UsbManager.FUNCTION_NCM) {
-            currentFunctions = UsbManager.FUNCTION_RNDIS
-        }
-
-        return supportedFunctions
-            .find { it -> it.mask == currentFunctions }
-            ?: NONE_FUNCTION
+        return supportedFunctions.find { it.mask == adjustedFunctions } ?: NONE_FUNCTION
     }
 
     private fun setCurrentFunction(function: UsbFunction) {
@@ -180,21 +174,21 @@ class UsbFunctionActivity @Inject constructor(
         dlog("setCurrentFunction: $function")
         when (function.mask) {
             UsbManager.FUNCTION_RNDIS -> {
-                previousFunctions = usbManager.getCurrentFunctions()
-                tetheringManager.startTethering(
+                previousFunctions = usbManager?.getCurrentFunctions() ?: UsbManager.FUNCTION_NONE
+                tetheringManager?.startTethering(
                     TetheringManager.TETHERING_USB,
                     executor,
                     tetheringCallback
                 )
             }
-            else -> usbManager.setCurrentFunctions(function.mask)
+            else -> usbManager?.setCurrentFunctions(function.mask)
         }
     }
 
     // Below functions are replicated from com.android.settings.connecteddevice.usb.UsbBackend
 
     private fun isClickEventIgnored(function: Long): Boolean {
-        val currentFunctions = usbManager.getCurrentFunctions()
+        val currentFunctions = usbManager?.getCurrentFunctions() ?: 0
         return (currentFunctions and UsbManager.FUNCTION_ACCESSORY) != 0L
             && function == UsbManager.FUNCTION_MTP
     }
@@ -209,25 +203,25 @@ class UsbFunctionActivity @Inject constructor(
     }
 
     private fun isUsbFileTransferRestricted(): Boolean {
-        return userManager.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER)
+        return userManager?.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER) ?: false
     }
 
     private fun isUsbTetheringRestricted(): Boolean {
-        return userManager.hasUserRestriction(UserManager.DISALLOW_CONFIG_TETHERING)
+        return userManager?.hasUserRestriction(UserManager.DISALLOW_CONFIG_TETHERING) ?: false
     }
 
     private fun isUsbFileTransferRestrictedBySystem(): Boolean {
-        return userManager.hasBaseUserRestriction(
+        return userManager?.hasBaseUserRestriction(
             UserManager.DISALLOW_USB_FILE_TRANSFER,
             UserHandle.of(UserHandle.myUserId())
-        )
+        ) ?: false
     }
 
     private fun isUsbTetheringRestrictedBySystem(): Boolean {
-        return userManager.hasBaseUserRestriction(
+        return userManager?.hasBaseUserRestriction(
             UserManager.DISALLOW_CONFIG_TETHERING,
             UserHandle.of(UserHandle.myUserId())
-        )
+        ) ?: false
     }
 
     private fun areFunctionDisallowed(functions: Long): Boolean {
@@ -244,7 +238,7 @@ class UsbFunctionActivity @Inject constructor(
     }
 
     private fun areFunctionsDisallowedByNonAdminUser(functions: Long): Boolean {
-        return !userManager.isAdminUser() && (functions and UsbManager.FUNCTION_RNDIS) != 0L
+        return !(userManager?.isAdminUser ?: false) && (functions and UsbManager.FUNCTION_RNDIS) != 0L
     }
 
     private companion object {
@@ -304,7 +298,7 @@ private class UsbFunctionAdapter(
     private val items: List<UsbFunction>,
 ) : ArrayAdapter<UsbFunction>(
     context,
-    R.layout.select_dialog_singlechoice_material,
+    com.android.internal.R.layout.select_dialog_singlechoice_material,
     items
 ) {
 
@@ -319,11 +313,11 @@ private class UsbFunctionAdapter(
 
         val textView = view as CheckedTextView
         val function = getItem(position)
-        textView.text = context.getString(function.descriptionResId)
+        textView.text = function?.let{ context.getString(it.descriptionResId) }
 
         // required for listview to trigger onclick
         view.focusable = View.NOT_FOCUSABLE
-        view.setClickable(false)
+        view.isClickable = false
 
         return view
     }
