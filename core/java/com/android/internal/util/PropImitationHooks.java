@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Process;
 import android.os.SystemProperties;
 import android.text.TextUtils;
@@ -34,8 +35,18 @@ import android.util.Log;
 
 import com.android.internal.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,7 +56,9 @@ import java.util.Set;
 public class PropImitationHooks {
 
     private static final String TAG = "PropImitationHooks";
-    private static final boolean DEBUG = SystemProperties.getBoolean("debug.pihooks.log", false);
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
+    private static final String DATA_FILE = "gms_certified_props.json";
 
     private static final String PACKAGE_AIWALLPAPERS = "com.google.android.apps.aiwallpapers";
     private static final String PACKAGE_ARCORE = "com.google.ar.core";
@@ -151,7 +164,7 @@ public class PropImitationHooks {
             "PIXEL_2025_MIDYEAR_EXPERIENCE"
     );
 
-    private static volatile String[] sCertifiedProps;
+    private static volatile List<String> sCertifiedProps = new ArrayList<>();
     private static volatile String sStockFp;
     private static volatile String sNetflixModel;
 
@@ -173,7 +186,6 @@ public class PropImitationHooks {
             return;
         }
 
-        sCertifiedProps = res.getStringArray(R.array.config_certifiedBuildProperties);
         sStockFp = res.getString(R.string.config_stockFingerprint);
         sNetflixModel = res.getString(R.string.config_netflixSpoofModel);
 
@@ -192,7 +204,7 @@ public class PropImitationHooks {
         switch (processName) {
             case PROCESS_GMS_UNSTABLE:
                 dlog("Setting certified props for: " + packageName + " process: " + processName);
-                setCertifiedPropsForGms();
+                setCertifiedPropsForGms(context);
                 return;
             case PROCESS_GMS_PERSISTENT:
             case PROCESS_GMS_GAPPS:
@@ -265,10 +277,32 @@ public class PropImitationHooks {
         }
     }
 
-    private static void setCertifiedPropsForGms() {
-        if (sCertifiedProps.length == 0) {
-            dlog("Certified props are not set");
+    private static void setCertifiedPropsForGms(Context context) {
+        if (!SystemProperties.getBoolean(SPOOF_PIHOOKS_PI, true))
             return;
+
+        File dataFile = new File(Environment.getDataSystemDirectory(), DATA_FILE);
+        String savedProps = readFromFile(dataFile);
+
+        if (TextUtils.isEmpty(savedProps)) {
+            Log.d(TAG, "Parsing props locally - data file unavailable");
+            sCertifiedProps = Arrays.asList(context.getResources().getStringArray(R.array.config_certifiedBuildProperties));
+        } else {
+            Log.d(TAG, "Parsing props fetched by attestation service");
+            try {
+                JSONObject parsedProps = new JSONObject(savedProps);
+                Iterator<String> keys = parsedProps.keys();
+
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    String value = parsedProps.getString(key);
+                    sCertifiedProps.add(key + ":" + value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Error parsing JSON data", e);
+                Log.d(TAG, "Parsing props locally as fallback");
+                sCertifiedProps = Arrays.asList(context.getResources().getStringArray(R.array.config_certifiedBuildProperties));
+            }
         }
         final boolean was = isGmsAddAccountActivityOnTop();
         final TaskStackListener taskStackListener = new TaskStackListener() {
@@ -308,6 +342,23 @@ public class PropImitationHooks {
         setSystemProperty(PROP_SECURITY_PATCH, Build.VERSION.SECURITY_PATCH);
         setSystemProperty(PROP_FIRST_API_LEVEL,
                 Integer.toString(Build.VERSION.DEVICE_INITIAL_SDK_INT));
+    }
+
+    private static String readFromFile(File file) {
+        StringBuilder content = new StringBuilder();
+
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    content.append(line);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Error reading from file", e);
+            }
+        }
+        return content.toString();
     }
 
     private static void setSystemProperty(String name, String value) {
