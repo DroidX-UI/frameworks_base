@@ -188,10 +188,6 @@ public class DroidXUtils {
         FireActions.toggleNotifications();
     }
 
-    public static void toggleQsPanel() {
-        FireActions.toggleQsPanel();
-    }
-
     public static void toggleCameraFlash() {
         FireActions.toggleCameraFlash();
     }
@@ -250,18 +246,6 @@ public class DroidXUtils {
             if (service != null) {
                 try {
                     service.togglePanel();
-                } catch (RemoteException e) {
-                    // do nothing.
-                }
-            }
-        }
-
-        // Toggle qs panel
-        public static void toggleQsPanel() {
-            IStatusBarService service = getStatusBarService();
-            if (service != null) {
-                try {
-                    service.toggleSettingsPanel();
                 } catch (RemoteException e) {
                     // do nothing.
                 }
