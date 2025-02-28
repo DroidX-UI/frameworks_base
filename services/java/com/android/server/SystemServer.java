@@ -316,7 +316,7 @@ import java.util.concurrent.Future;
 // LineageHardware
 import com.android.server.custom.LineageHardwareService;
 // DroidX-UI framework
-import org.droidx.server.DroidXSystemServer;
+import com.droidx.server.DroidXSystemServer;
 
 /**
  * Entry point to {@code system_server}.
